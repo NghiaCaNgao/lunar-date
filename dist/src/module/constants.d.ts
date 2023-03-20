@@ -1,0 +1,15 @@
+export declare const C13: number[];
+export declare const C14: number[];
+export declare const C15: number[];
+export declare const C16: number[];
+export declare const C17: number[];
+export declare const C18: number[];
+export declare const C19: number[];
+export declare const C20: number[];
+export declare const C21: number[];
+export declare const C22: number[];
+export declare const CAN: string[];
+export declare const CHI: string[];
+export declare const TUAN: string[];
+export declare const GIO_HD: string[];
+export declare const TIET_KHI: string[];

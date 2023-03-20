@@ -1,0 +1,17 @@
+{
+    "type": "module",
+    "scripts": {
+        "build": "rollup -c rollup.config.js"
+    },
+    "dependencies": {
+        "@rollup/plugin-typescript": "^11.0.0",
+        "rollup-plugin-dts": "^5.3.0",
+        "rollup-plugin-esbuild": "^5.0.0",
+        "ts-loader": "^9.4.2",
+        "tslib": "^2.5.0",
+        "typescript": "^5.0.2"
+    },
+    "devDependencies": {
+        "@types/node": "^18.15.3"
+    }
+}

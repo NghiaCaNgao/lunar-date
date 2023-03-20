@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "declaration": true,
+        "moduleResolution": "node",
+        "outDir": "./lib",
+        "rootDir": "."
+    },
+    "include": [
+        "./src/*.ts",
+        "src/module/*.ts"
+    ]
+}
+// TSC: TypeScript's UMD output does not support creating a browser global
