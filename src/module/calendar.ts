@@ -1,4 +1,4 @@
-export interface ICalendar {
+export interface IRootDate {
     day: number
     month: number
     year: number
@@ -9,19 +9,19 @@ export interface ICalendar {
 export const PI = Math.PI;
 export const INT = (d: number): number => Math.floor(d);
 
-export default abstract class Calendar {
+export default abstract class RootDate {
     protected readonly day: number
     protected readonly month: number
     protected readonly year: number
     protected readonly jd: number // Julian Date
     protected leap?: boolean
 
-    constructor(date: ICalendar) {
+    constructor(date: IRootDate) {
         this.day = date.day;
         this.month = date.month;
         this.year = date.year;
         this.leap = date.leap;
-        this.jd = date.jd || Calendar.jdn(this.day, this.month, this.year);
+        this.jd = date.jd || RootDate.jdn(this.day, this.month, this.year);
     }
 
     /**

@@ -1,9 +1,9 @@
 import * as Constants from "./constants";
-import Calendar, { ICalendar } from "./calendar";
+import RootDate, { IRootDate } from "./calendar";
 import SolarDate from "./solar";
 
-export default class LunarDate extends Calendar {
-    constructor(date: ICalendar) {
+export default class LunarDate extends RootDate {
+    constructor(date: IRootDate) {
         super(date);
     }
 
@@ -41,7 +41,7 @@ export default class LunarDate extends Calendar {
         let offsetOfTet = yearCode >> 17;
         let leapMonth = yearCode & 0xf;
         let leapMonthLength = monthLengths[yearCode >> 16 & 0x1];
-        let currentJD = Calendar.jdn(1, 1, year) + offsetOfTet;
+        let currentJD = RootDate.jdn(1, 1, year) + offsetOfTet;
 
         let j = yearCode >> 4;
         for (let i = 0; i < 12; i++) {
@@ -125,7 +125,7 @@ export default class LunarDate extends Calendar {
         }
 
         let monthInfo = LunarDate.getYearInfo(year);
-        let jd = Calendar.jdn(day, month, year);
+        let jd = RootDate.jdn(day, month, year);
 
         if (jd < monthInfo[0].jd) {
             monthInfo = LunarDate.getYearInfo(year - 1);

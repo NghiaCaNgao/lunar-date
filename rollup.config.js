@@ -11,20 +11,7 @@ export default [
                 file: `dist/bundle.js`,
                 format: 'es',
                 sourcemap: true,
-                exports: 'default',
-                name: "Calendar"
-            },
-        ]
-    },
-    {
-        input: `src/index.ts`,
-        plugins: [typescript(), esbuild()],
-        output: [
-            {
-                file: `dist/bundle.umd.js`,
-                format: 'umd',
-                sourcemap: true,
-                exports: 'default',
+                // exports: 'default',
                 name: "Calendar"
             },
         ]

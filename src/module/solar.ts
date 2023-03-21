@@ -1,7 +1,7 @@
-import Calendar, { ICalendar, INT } from "./calendar";
+import RootDate, { IRootDate, INT } from "./calendar";
 
-export default class SolarDate extends Calendar {
-    public constructor(date: ICalendar);
+export default class SolarDate extends RootDate {
+    public constructor(date: IRootDate);
     public constructor(date: Date);
 
     public constructor(...args: any[]) {
@@ -27,7 +27,7 @@ export default class SolarDate extends Calendar {
      */
     toJdn(): number {
         const { day, month, year } = this;
-        return Calendar.jdn(day, month, year);
+        return RootDate.jdn(day, month, year);
     }
 
     /**

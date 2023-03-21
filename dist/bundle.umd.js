@@ -65,15 +65,15 @@
     var INT = function(d) {
       return Math.floor(d);
     };
-    var Calendar = function() {
-      function Calendar2(date) {
+    var RootDate = function() {
+      function RootDate2(date) {
         this.day = date.day;
         this.month = date.month;
         this.year = date.year;
         this.leap = date.leap;
-        this.jd = date.jd || Calendar2.jdn(this.day, this.month, this.year);
+        this.jd = date.jd || RootDate2.jdn(this.day, this.month, this.year);
       }
-      Calendar2.jdn = function(day, month, year) {
+      RootDate2.jdn = function(day, month, year) {
         var a = INT((14 - month) / 12);
         var y = year + 4800 - a;
         var m = month + 12 * a - 3;
@@ -83,7 +83,7 @@
         }
         return jd;
       };
-      Calendar2.prototype.get = function() {
+      RootDate2.prototype.get = function() {
         return {
           day: this.day,
           month: this.month,
@@ -92,7 +92,7 @@
           julian: this.jd
         };
       };
-      return Calendar2;
+      return RootDate2;
     }();
 
     var SolarDate = function(_super) {
@@ -118,7 +118,7 @@
       };
       SolarDate2.prototype.toJdn = function() {
         var _a = this, day = _a.day, month = _a.month, year = _a.year;
-        return Calendar.jdn(day, month, year);
+        return RootDate.jdn(day, month, year);
       };
       SolarDate2.fromJdn = function(jdn) {
         var A;
@@ -139,7 +139,7 @@
         return new SolarDate2({ day, month, year, jd: jdn });
       };
       return SolarDate2;
-    }(Calendar);
+    }(RootDate);
 
     var LunarDate = function(_super) {
       __extends(LunarDate2, _super);
@@ -170,7 +170,7 @@
         var offsetOfTet = yearCode >> 17;
         var leapMonth = yearCode & 15;
         var leapMonthLength = monthLengths[yearCode >> 16 & 1];
-        var currentJD = Calendar.jdn(1, 1, year) + offsetOfTet;
+        var currentJD = RootDate.jdn(1, 1, year) + offsetOfTet;
         var j = yearCode >> 4;
         for (var i = 0; i < 12; i++) {
           regularMonths[12 - i - 1] = monthLengths[j & 1];
@@ -249,7 +249,7 @@
           return new LunarDate2({ day: 0, month: 0, year: 0 });
         }
         var monthInfo = LunarDate2.getYearInfo(year);
-        var jd = Calendar.jdn(day, month, year);
+        var jd = RootDate.jdn(day, month, year);
         if (jd < monthInfo[0].jd) {
           monthInfo = LunarDate2.getYearInfo(year - 1);
         }
@@ -261,7 +261,7 @@
       LunarDate2.FIRST_DAY = LunarDate2.jdn(31, 1, 1200);
       LunarDate2.LAST_DAY = LunarDate2.jdn(31, 12, 2199);
       return LunarDate2;
-    }(Calendar);
+    }(RootDate);
 
     var index = {
       LunarDate,

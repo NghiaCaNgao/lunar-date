@@ -1,7 +1,4 @@
-import Calendar from "../../src/index";
-
-const SolarDate = Calendar.SolarDate;
-const LunarDate = Calendar.LunarDate;
+import { LunarDate, SolarDate } from "../../dist/bundle.js";
 
 const solarDate = new SolarDate(new Date());
 const lunarDate = LunarDate.fromSolarDate(solarDate);
