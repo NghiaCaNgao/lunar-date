@@ -1,18 +1,16 @@
-interface IRootDate {
+interface ICalendar {
     day: number;
     month: number;
     year: number;
-    leap?: boolean;
-    jd?: number;
 }
-declare abstract class RootDate {
+declare abstract class Calendar {
     protected readonly day: number;
     protected readonly month: number;
     protected readonly year: number;
-    protected readonly jd: number;
+    protected jd?: number;
     protected leap?: boolean;
-    constructor(date: IRootDate);
-    static jdn(day: number, month: number, year: number): number;
+    constructor(date: ICalendar);
+    static jdn(date: Date): number;
     get(): {
         day: number;
         month: number;
@@ -22,23 +20,35 @@ declare abstract class RootDate {
     };
 }
 
-declare class SolarDate extends RootDate {
-    constructor(date: IRootDate);
+interface ISolarDate extends ICalendar {
+}
+declare class SolarDate extends Calendar {
+    constructor(date: ISolarDate);
     constructor(date: Date);
-    static isLeapYear(year: number): boolean;
-    toJdn(): number;
-    static fromJdn(jdn: number): SolarDate;
+    private static isLeapYear;
+    toJd(): number;
+    toDate(): Date;
+    static fromJd(jd: number): SolarDate;
 }
 
-declare class LunarDate extends RootDate {
-    constructor(date: IRootDate);
-    static FIRST_DAY: number;
-    static LAST_DAY: number;
-    static findLunarDate(julian_date: number, month_info: Array<LunarDate>): LunarDate;
+interface ILunarDate extends ICalendar {
+    leap?: boolean;
+    jd?: number;
+}
+interface IZodiacHour {
+    name: string;
+    time: number[];
+}
+declare class LunarDate extends Calendar {
+    constructor(date: ILunarDate);
+    private static FIRST_DAY;
+    private static LAST_DAY;
+    static findLunarDate(jd: number, month_info: Array<LunarDate>): LunarDate;
     static decodeLunarYear(year: number, yearCode: number): Array<LunarDate>;
     static getYearInfo(year: number): Array<LunarDate>;
     getYearInfo(): Array<LunarDate>;
     getYearCanChi(): string;
+    getZodiacHour(): Array<IZodiacHour>;
     toSolarDate(): SolarDate;
     static fromSolarDate(date: SolarDate): LunarDate;
     get(): {

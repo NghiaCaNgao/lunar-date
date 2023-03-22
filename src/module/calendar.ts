@@ -1,40 +1,38 @@
-export interface IRootDate {
+export interface ICalendar {
     day: number
     month: number
     year: number
-    leap?: boolean
-    jd?: number
 }
 
 export const PI = Math.PI;
 export const INT = (d: number): number => Math.floor(d);
 
-export default abstract class RootDate {
+export default abstract class Calendar {
     protected readonly day: number
     protected readonly month: number
     protected readonly year: number
-    protected readonly jd: number // Julian Date
+    protected jd?: number // Julian Date
     protected leap?: boolean
 
-    constructor(date: IRootDate) {
+    constructor(date: ICalendar) {
         this.day = date.day;
         this.month = date.month;
         this.year = date.year;
-        this.leap = date.leap;
-        this.jd = date.jd || RootDate.jdn(this.day, this.month, this.year);
     }
 
     /**
      * Convert from Solar date to Julian date.
-     * @param day
-     * @param month 
-     * @param year 
+     * @param {Date} date
      * @returns 
      */
-    static jdn(day: number, month: number, year: number): number {
-        var a = INT((14 - month) / 12);
-        var y = year + 4800 - a;
-        var m = month + 12 * a - 3;
+    static jdn(date: Date): number {
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+
+        const a = INT((14 - month) / 12);
+        const y = year + 4800 - a;
+        const m = month + 12 * a - 3;
         var jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
         if (jd < 2299161) {
             jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;

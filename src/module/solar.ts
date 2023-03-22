@@ -1,7 +1,9 @@
-import RootDate, { IRootDate, INT } from "./calendar";
+import Calendar, { ICalendar, INT } from "./calendar";
 
-export default class SolarDate extends RootDate {
-    public constructor(date: IRootDate);
+interface ISolarDate extends ICalendar { }
+
+export default class SolarDate extends Calendar {
+    public constructor(date: ISolarDate);
     public constructor(date: Date);
 
     public constructor(...args: any[]) {
@@ -9,15 +11,21 @@ export default class SolarDate extends RootDate {
 
         if (date.toJSON) { // Date object
             const d = date as Date;
-            super({ day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() });
+            super({
+                day: d.getDate(),
+                month: d.getMonth() + 1,
+                year: d.getFullYear()
+            });
+            this.jd = SolarDate.jdn(date);
         } else { // ICalendar
             super(date);
+            this.jd = SolarDate.jdn(new Date(date.year, date.month - 1, date.day));
         }
 
         this.leap = SolarDate.isLeapYear(this.year);
     }
 
-    static isLeapYear(year:number): boolean {
+    private static isLeapYear(year: number): boolean {
         return (year % 100 == 0 && year % 4 == 0) || year % 400 == 0;
     }
 
@@ -25,25 +33,33 @@ export default class SolarDate extends RootDate {
      * Convert to Julian date
      * @returns Julian date
      */
-    toJdn(): number {
+    toJd(): number {
         const { day, month, year } = this;
-        return RootDate.jdn(day, month, year);
+        return Calendar.jdn(this.toDate());
+    }
+
+    /**
+     * Convert to Date object
+     * @returns Date object
+     */
+    toDate(): Date {
+        const { day, month, year } = this;
+        return new Date(year, month - 1, day);
     }
 
     /**
      * Create a new Solar Date object from the Julian date
-     * @param {number} jdn Julian date
+     * @param {number} jd Julian date
      * @returns {SolarDate}
      */
-    static fromJdn(jdn: number): SolarDate {
+    static fromJd(jd: number): SolarDate {
         let A: number;
 
-        let Z = jdn;
-        if (Z < 2299161) {
-            A = Z;
+        if (jd < 2299161) {
+            A = jd;
         } else {
-            let alpha = INT((Z - 1867216.25) / 36524.25);
-            A = Z + 1 + alpha - INT(alpha / 4);
+            let alpha = INT((jd - 1867216.25) / 36524.25);
+            A = jd + 1 + alpha - INT(alpha / 4);
         }
 
         let B = A + 1524;
@@ -55,6 +71,6 @@ export default class SolarDate extends RootDate {
         let month = (E < 14) ? E - 1 : E - 13;
         let year = (month < 3) ? C - 4715 : C - 4716;
 
-        return new SolarDate({ day: day, month: month, year: year, jd: jdn });
+        return new SolarDate({ day: day, month: month, year: year });
     }
 }

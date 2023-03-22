@@ -1,14 +1,23 @@
-import RootDate, { IRootDate } from "./calendar";
+import Calendar, { ICalendar } from "./calendar";
 import SolarDate from "./solar";
-export default class LunarDate extends RootDate {
-    constructor(date: IRootDate);
-    static FIRST_DAY: number;
-    static LAST_DAY: number;
-    static findLunarDate(julian_date: number, month_info: Array<LunarDate>): LunarDate;
+interface ILunarDate extends ICalendar {
+    leap?: boolean;
+    jd?: number;
+}
+interface IZodiacHour {
+    name: string;
+    time: number[];
+}
+export default class LunarDate extends Calendar {
+    constructor(date: ILunarDate);
+    private static FIRST_DAY;
+    private static LAST_DAY;
+    static findLunarDate(jd: number, month_info: Array<LunarDate>): LunarDate;
     static decodeLunarYear(year: number, yearCode: number): Array<LunarDate>;
     static getYearInfo(year: number): Array<LunarDate>;
     getYearInfo(): Array<LunarDate>;
     getYearCanChi(): string;
+    getZodiacHour(): Array<IZodiacHour>;
     toSolarDate(): SolarDate;
     static fromSolarDate(date: SolarDate): LunarDate;
     get(): {
@@ -20,3 +29,4 @@ export default class LunarDate extends RootDate {
         julian: number;
     };
 }
+export {};

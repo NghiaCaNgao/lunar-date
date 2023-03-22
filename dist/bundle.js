@@ -53,21 +53,22 @@ var C22 = new Array(5158176, 3725095, 6204832, 4871600, 3550645, 5916080, 449809
 var CAN = new Array("Gi\xE1p", "\u1EA4t", "B\xEDnh", "\u0110inh", "M\u1EADu", "K\u1EF7", "Canh", "T\xE2n", "Nh\xE2m", "Qu\xFD");
 var CHI = new Array("T\xFD", "S\u1EEDu", "D\u1EA7n", "M\xE3o", "Th\xECn", "T\u1EF5", "Ng\u1ECD", "M\xF9i", "Th\xE2n", "D\u1EADu", "Tu\u1EA5t", "H\u1EE3i");
 new Array("Ch\u1EE7 nh\u1EADt", "Th\u1EE9 hai", "Th\u1EE9 ba", "Th\u1EE9 t\u01B0", "Th\u1EE9 n\u0103m", "Th\u1EE9 s\xE1u", "Th\u1EE9 b\u1EA3y");
-new Array("110100101100", "001101001011", "110011010010", "101100110100", "001011001101", "010010110011");
+var GIO_HD = new Array("110100101100", "001101001011", "110011010010", "101100110100", "001011001101", "010010110011");
 new Array("Xu\xE2n ph\xE2n", "Thanh minh", "C\u1ED1c v\u0169", "L\u1EADp h\u1EA1", "Ti\u1EC3u m\xE3n", "Mang ch\u1EE7ng", "H\u1EA1 ch\xED", "Ti\u1EC3u th\u1EED", "\u0110\u1EA1i th\u1EED", "L\u1EADp thu", "X\u1EED th\u1EED", "B\u1EA1ch l\u1ED9", "Thu ph\xE2n", "H\xE0n l\u1ED9", "S\u01B0\u01A1ng gi\xE1ng", "L\u1EADp \u0111\xF4ng", "Ti\u1EC3u tuy\u1EBFt", "\u0110\u1EA1i tuy\u1EBFt", "\u0110\xF4ng ch\xED", "Ti\u1EC3u h\xE0n", "\u0110\u1EA1i h\xE0n", "L\u1EADp xu\xE2n", "V\u0169 Th\u1EE7y", "Kinh tr\u1EADp");
 
 var INT = function(d) {
   return Math.floor(d);
 };
-var RootDate = function() {
-  function RootDate2(date) {
+var Calendar = function() {
+  function Calendar2(date) {
     this.day = date.day;
     this.month = date.month;
     this.year = date.year;
-    this.leap = date.leap;
-    this.jd = date.jd || RootDate2.jdn(this.day, this.month, this.year);
   }
-  RootDate2.jdn = function(day, month, year) {
+  Calendar2.jdn = function(date) {
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
     var a = INT((14 - month) / 12);
     var y = year + 4800 - a;
     var m = month + 12 * a - 3;
@@ -77,7 +78,7 @@ var RootDate = function() {
     }
     return jd;
   };
-  RootDate2.prototype.get = function() {
+  Calendar2.prototype.get = function() {
     return {
       day: this.day,
       month: this.month,
@@ -86,7 +87,7 @@ var RootDate = function() {
       julian: this.jd
     };
   };
-  return RootDate2;
+  return Calendar2;
 }();
 
 var SolarDate = function(_super) {
@@ -100,9 +101,15 @@ var SolarDate = function(_super) {
     var date = args[0];
     if (date.toJSON) {
       var d = date;
-      _this = _super.call(this, { day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() }) || this;
+      _this = _super.call(this, {
+        day: d.getDate(),
+        month: d.getMonth() + 1,
+        year: d.getFullYear()
+      }) || this;
+      _this.jd = SolarDate2.jdn(date);
     } else {
       _this = _super.call(this, date) || this;
+      _this.jd = SolarDate2.jdn(new Date(date.year, date.month - 1, date.day));
     }
     _this.leap = SolarDate2.isLeapYear(_this.year);
     return _this;
@@ -110,18 +117,21 @@ var SolarDate = function(_super) {
   SolarDate2.isLeapYear = function(year) {
     return year % 100 == 0 && year % 4 == 0 || year % 400 == 0;
   };
-  SolarDate2.prototype.toJdn = function() {
-    var _a = this, day = _a.day, month = _a.month, year = _a.year;
-    return RootDate.jdn(day, month, year);
+  SolarDate2.prototype.toJd = function() {
+    var _a = this; _a.day; _a.month; _a.year;
+    return Calendar.jdn(this.toDate());
   };
-  SolarDate2.fromJdn = function(jdn) {
+  SolarDate2.prototype.toDate = function() {
+    var _a = this, day = _a.day, month = _a.month, year = _a.year;
+    return new Date(year, month - 1, day);
+  };
+  SolarDate2.fromJd = function(jd) {
     var A;
-    var Z = jdn;
-    if (Z < 2299161) {
-      A = Z;
+    if (jd < 2299161) {
+      A = jd;
     } else {
-      var alpha = INT((Z - 186721625e-2) / 36524.25);
-      A = Z + 1 + alpha - INT(alpha / 4);
+      var alpha = INT((jd - 186721625e-2) / 36524.25);
+      A = jd + 1 + alpha - INT(alpha / 4);
     }
     var B = A + 1524;
     var C = INT((B - 122.1) / 365.25);
@@ -130,31 +140,34 @@ var SolarDate = function(_super) {
     var day = INT(B - D - INT(30.6001 * E));
     var month = E < 14 ? E - 1 : E - 13;
     var year = month < 3 ? C - 4715 : C - 4716;
-    return new SolarDate2({ day, month, year, jd: jdn });
+    return new SolarDate2({ day, month, year });
   };
   return SolarDate2;
-}(RootDate);
+}(Calendar);
 
 var LunarDate = function(_super) {
   __extends(LunarDate2, _super);
   function LunarDate2(date) {
-    return _super.call(this, date) || this;
+    var _this = _super.call(this, date) || this;
+    _this.leap = date.leap;
+    _this.jd = date.jd;
+    return _this;
   }
-  LunarDate2.findLunarDate = function(julian_date, month_info) {
-    if (julian_date > LunarDate2.LAST_DAY || julian_date < LunarDate2.FIRST_DAY || month_info[0].jd > julian_date) {
+  LunarDate2.findLunarDate = function(jd, month_info) {
+    if (jd > LunarDate2.LAST_DAY || jd < LunarDate2.FIRST_DAY || month_info[0].jd > jd) {
       throw new Error("Out of calculations");
     }
     var index = month_info.length - 1;
-    while (julian_date < month_info[index].jd) {
+    while (jd < month_info[index].jd) {
       index--;
     }
-    var off = julian_date - month_info[index].jd;
+    var off = jd - month_info[index].jd;
     return new LunarDate2({
       day: month_info[index].day + off,
       month: month_info[index].month,
       year: month_info[index].year,
       leap: month_info[index].leap,
-      jd: julian_date
+      jd
     });
   };
   LunarDate2.decodeLunarYear = function(year, yearCode) {
@@ -164,31 +177,19 @@ var LunarDate = function(_super) {
     var offsetOfTet = yearCode >> 17;
     var leapMonth = yearCode & 15;
     var leapMonthLength = monthLengths[yearCode >> 16 & 1];
-    var currentJD = RootDate.jdn(1, 1, year) + offsetOfTet;
+    var currentJD = Calendar.jdn(new Date(year, 0, 1)) + offsetOfTet;
     var j = yearCode >> 4;
     for (var i = 0; i < 12; i++) {
       regularMonths[12 - i - 1] = monthLengths[j & 1];
       j >>= 1;
     }
     for (var month = 1; month <= 12; month++) {
+      var date = { day: 1, month, year };
+      monthInfo.push(new LunarDate2(__assign(__assign({}, date), { leap: false, jd: currentJD })));
+      currentJD += regularMonths[month - 1];
       if (leapMonth == month) {
-        monthInfo.push(new LunarDate2({
-          day: 1,
-          month: leapMonth,
-          year,
-          leap: true,
-          jd: currentJD
-        }));
+        monthInfo.push(new LunarDate2(__assign(__assign({}, date), { leap: true, jd: currentJD })));
         currentJD += leapMonthLength;
-      } else {
-        monthInfo.push(new LunarDate2({
-          day: 1,
-          month,
-          year,
-          leap: false,
-          jd: currentJD
-        }));
-        currentJD += regularMonths[month - 1];
       }
     }
     return monthInfo;
@@ -224,6 +225,22 @@ var LunarDate = function(_super) {
   LunarDate2.prototype.getYearCanChi = function() {
     return CAN[(this.year + 6) % 10] + " " + CHI[(this.year + 8) % 12];
   };
+  LunarDate2.prototype.getZodiacHour = function() {
+    var jd = this.jd;
+    var chiOfDay = (jd + 1) % 12;
+    var gioHD = GIO_HD[chiOfDay % 6];
+    var zodiacHours = [];
+    for (var i = 0; i < 12; i++) {
+      if (gioHD.charAt(i) == "1") {
+        var zodiac = { name: "", time: [] };
+        zodiac.name = CHI[i];
+        zodiac.time.push((i * 2 + 23) % 24);
+        zodiac.time.push((i * 2 + 1) % 24);
+        zodiacHours.push(zodiac);
+      }
+    }
+    return zodiacHours;
+  };
   LunarDate2.prototype.toSolarDate = function() {
     var _a = this, day = _a.day, month = _a.month, year = _a.year;
     if (year < 1200 || year > 2199) {
@@ -235,7 +252,7 @@ var LunarDate = function(_super) {
       currentMonthInfo = monthInfo[month];
     }
     var ld = currentMonthInfo.jd + day - 1;
-    return SolarDate.fromJdn(ld);
+    return SolarDate.fromJd(ld);
   };
   LunarDate2.fromSolarDate = function(date) {
     var _a = date.get(), day = _a.day, month = _a.month, year = _a.year;
@@ -243,7 +260,7 @@ var LunarDate = function(_super) {
       return new LunarDate2({ day: 0, month: 0, year: 0 });
     }
     var monthInfo = LunarDate2.getYearInfo(year);
-    var jd = RootDate.jdn(day, month, year);
+    var jd = Calendar.jdn(new Date(year, month - 1, day));
     if (jd < monthInfo[0].jd) {
       monthInfo = LunarDate2.getYearInfo(year - 1);
     }
@@ -252,10 +269,10 @@ var LunarDate = function(_super) {
   LunarDate2.prototype.get = function() {
     return __assign(__assign({}, _super.prototype.get.call(this)), { name: this.getYearCanChi() });
   };
-  LunarDate2.FIRST_DAY = LunarDate2.jdn(31, 1, 1200);
-  LunarDate2.LAST_DAY = LunarDate2.jdn(31, 12, 2199);
+  LunarDate2.FIRST_DAY = Calendar.jdn(new Date(1200, 0, 31));
+  LunarDate2.LAST_DAY = Calendar.jdn(new Date(2199, 11, 31));
   return LunarDate2;
-}(RootDate);
+}(Calendar);
 
 export { LunarDate, SolarDate };
 //# sourceMappingURL=bundle.js.map
