@@ -1,5 +1,5 @@
 import * as Constants from "./constants";
-import Calendar, { ICalendar } from "./calendar";
+import Calendar, { ICalendar, PI, INT } from "./calendar";
 import SolarDate from "./solar";
 
 interface ILunarDate extends ICalendar {
@@ -129,9 +129,70 @@ export default class LunarDate extends Calendar {
         return LunarDate.findLunarDate(jd, monthInfo);
     }
 
+    /* Compute the longitude of the sun at any time.
+    * Parameter: floating number jdn, the number of days since 1/1/4713 BC noon
+    * Algorithm from: "Astronomical Algorithms" by Jean Meeus, 1998
+    */
+    private static getSunLongitudeByJd(jd: number): number {
+        const T = (jd - 2451545.0) / 36525; // Time in Julian centuries from 2000-01-01 12:00:00 GMT
+        const T2 = T * T;
+        const dr = PI / 180; // degree to radian
+
+        const M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2; // mean anomaly, degree
+        const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2; // mean longitude, degree
+        let DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M)
+            + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M)
+            + 0.000290 * Math.sin(dr * 3 * M);
+
+        const theta = L0 + DL; // true longitude, degree
+        const omega = 125.04 - 1934.136 * T; // obtain apparent longitude by correcting for nutation and aberration
+        let lambda = theta - 0.00569 - 0.00478 * Math.sin(omega * dr);
+
+        // Convert to radians
+        lambda = lambda * dr;
+        lambda = lambda - PI * 2 * (INT(lambda / (PI * 2))); // Normalize to (0, 2*PI)
+        return lambda;
+    }
+
+    /* Compute the sun segment at start (00:00) of the day with the given integral Julian day number.
+    * The time zone if the time difference between local time and UTC: 7.0 for UTC+7:00.
+    * The function returns a number between 0 and 23.
+    * From the day after March equinox and the 1st major term after March equinox, 0 is returned.
+    * After that, return 1, 2, 3 ...
+    */
+    private static getSunLongitude(dayNumber: number, timeZone: number): number {
+        return INT(LunarDate.getSunLongitudeByJd(dayNumber - 0.5 - timeZone / 24.0) / PI * 12);
+    }
+
     getYearCanChi(): string {
         return Constants.CAN[(this.year + 6) % 10] + " "
             + Constants.CHI[(this.year + 8) % 12];
+    }
+
+    getMonthCanChi(): string {
+        return Constants.CAN[(this.year * 12 + this.month + 3) % 10] + " "
+            + Constants.CHI[(this.month + 1) % 12] + " "
+            + (this.leap) ? "(nhuận)" : "";
+    }
+
+    getDayCanChi(): string {
+        return Constants.CAN[(this.jd + 9) % 10] + " "
+            + Constants.CHI[(this.jd + 1) % 12];
+    }
+
+    /*
+    * Can cua gio Chinh Ty (00:00) cua ngay voi JDN nay
+    */
+    getGioCanChi(): string {
+        return Constants.CAN[(this.jd - 1) * 2 % 10] + Constants.CHI[0];
+    }
+
+    getDayOfWeek(): string {
+        return Constants.TUAN[(this.jd + 1) % 7];
+    }
+
+    getTietKhi(): string {
+        return Constants.TIET_KHI[LunarDate.getSunLongitude(this.jd + 1, 7.0)];
     }
 
     getZodiacHour(): Array<IZodiacHour> {

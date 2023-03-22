@@ -12,14 +12,21 @@ export default class LunarDate extends Calendar {
     constructor(date: ILunarDate);
     private static FIRST_DAY;
     private static LAST_DAY;
-    static findLunarDate(jd: number, month_info: Array<LunarDate>): LunarDate;
-    static decodeLunarYear(year: number, yearCode: number): Array<LunarDate>;
-    static getYearInfo(year: number): Array<LunarDate>;
-    getYearInfo(): Array<LunarDate>;
+    private static findLunarDate;
+    private static decodeLunarYear;
+    private static getYearInfo;
+    private getYearInfo;
+    static fromSolarDate(date: SolarDate): LunarDate;
+    private static getSunLongitudeByJd;
+    private static getSunLongitude;
     getYearCanChi(): string;
+    getMonthCanChi(): string;
+    getDayCanChi(): string;
+    getGioCanChi(): string;
+    getDayOfWeek(): string;
+    getTietKhi(): string;
     getZodiacHour(): Array<IZodiacHour>;
     toSolarDate(): SolarDate;
-    static fromSolarDate(date: SolarDate): LunarDate;
     get(): {
         name: string;
         day: number;

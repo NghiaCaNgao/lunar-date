@@ -52,10 +52,11 @@ var C21 = new Array(4639072, 3070292, 5559456, 4119120, 2782546, 5133984, 371293
 var C22 = new Array(5158176, 3725095, 6204832, 4871600, 3550645, 5916080, 4498096, 3060404, 5548368, 3978585, 6449952, 5025104, 3692390, 6050672, 4736368, 3302772, 5788336, 4221264, 2783571, 5266080, 3910311, 6203088, 4868832, 3515109, 5940560, 4379296, 3007140, 5428560, 4086459, 6444704, 5019344, 3754422, 6179504, 4630736, 3200181, 5681808, 4240720, 2780498, 5262752, 3904871, 6329712, 4868528, 3451253, 5924016, 4483728, 2931348, 5401424, 4074336, 2665313, 5018992, 3689190, 6082912, 4646048, 3075365, 5560976, 4217680, 2897619, 5253856, 3838935, 6329040, 4901200, 3331414, 5813408, 4372112, 3038612, 5395888, 4072954, 6563248, 5149360, 3582646, 6056272, 4617376, 3256997, 5549392, 4216224, 2796403, 5383536, 3822455, 6312624, 4876624, 3435862, 5790368, 4369232, 3036884, 5524192, 3974512, 2647250, 5034592, 3599014, 5952848, 4610720, 3190181, 5674448, 4213456, 2795955, 5285072, 3855031, 6206032, 4764992, 3396950);
 var CAN = new Array("Gi\xE1p", "\u1EA4t", "B\xEDnh", "\u0110inh", "M\u1EADu", "K\u1EF7", "Canh", "T\xE2n", "Nh\xE2m", "Qu\xFD");
 var CHI = new Array("T\xFD", "S\u1EEDu", "D\u1EA7n", "M\xE3o", "Th\xECn", "T\u1EF5", "Ng\u1ECD", "M\xF9i", "Th\xE2n", "D\u1EADu", "Tu\u1EA5t", "H\u1EE3i");
-new Array("Ch\u1EE7 nh\u1EADt", "Th\u1EE9 hai", "Th\u1EE9 ba", "Th\u1EE9 t\u01B0", "Th\u1EE9 n\u0103m", "Th\u1EE9 s\xE1u", "Th\u1EE9 b\u1EA3y");
+var TUAN = new Array("Ch\u1EE7 nh\u1EADt", "Th\u1EE9 hai", "Th\u1EE9 ba", "Th\u1EE9 t\u01B0", "Th\u1EE9 n\u0103m", "Th\u1EE9 s\xE1u", "Th\u1EE9 b\u1EA3y");
 var GIO_HD = new Array("110100101100", "001101001011", "110011010010", "101100110100", "001011001101", "010010110011");
-new Array("Xu\xE2n ph\xE2n", "Thanh minh", "C\u1ED1c v\u0169", "L\u1EADp h\u1EA1", "Ti\u1EC3u m\xE3n", "Mang ch\u1EE7ng", "H\u1EA1 ch\xED", "Ti\u1EC3u th\u1EED", "\u0110\u1EA1i th\u1EED", "L\u1EADp thu", "X\u1EED th\u1EED", "B\u1EA1ch l\u1ED9", "Thu ph\xE2n", "H\xE0n l\u1ED9", "S\u01B0\u01A1ng gi\xE1ng", "L\u1EADp \u0111\xF4ng", "Ti\u1EC3u tuy\u1EBFt", "\u0110\u1EA1i tuy\u1EBFt", "\u0110\xF4ng ch\xED", "Ti\u1EC3u h\xE0n", "\u0110\u1EA1i h\xE0n", "L\u1EADp xu\xE2n", "V\u0169 Th\u1EE7y", "Kinh tr\u1EADp");
+var TIET_KHI = new Array("Xu\xE2n ph\xE2n", "Thanh minh", "C\u1ED1c v\u0169", "L\u1EADp h\u1EA1", "Ti\u1EC3u m\xE3n", "Mang ch\u1EE7ng", "H\u1EA1 ch\xED", "Ti\u1EC3u th\u1EED", "\u0110\u1EA1i th\u1EED", "L\u1EADp thu", "X\u1EED th\u1EED", "B\u1EA1ch l\u1ED9", "Thu ph\xE2n", "H\xE0n l\u1ED9", "S\u01B0\u01A1ng gi\xE1ng", "L\u1EADp \u0111\xF4ng", "Ti\u1EC3u tuy\u1EBFt", "\u0110\u1EA1i tuy\u1EBFt", "\u0110\xF4ng ch\xED", "Ti\u1EC3u h\xE0n", "\u0110\u1EA1i h\xE0n", "L\u1EADp xu\xE2n", "V\u0169 Th\u1EE7y", "Kinh tr\u1EADp");
 
+var PI = Math.PI;
 var INT = function(d) {
   return Math.floor(d);
 };
@@ -222,8 +223,52 @@ var LunarDate = function(_super) {
   LunarDate2.prototype.getYearInfo = function() {
     return LunarDate2.getYearInfo(this.year);
   };
+  LunarDate2.fromSolarDate = function(date) {
+    var _a = date.get(), day = _a.day, month = _a.month, year = _a.year;
+    if (year < 1200 || year > 2199) {
+      return new LunarDate2({ day: 0, month: 0, year: 0 });
+    }
+    var monthInfo = LunarDate2.getYearInfo(year);
+    var jd = Calendar.jdn(new Date(year, month - 1, day));
+    if (jd < monthInfo[0].jd) {
+      monthInfo = LunarDate2.getYearInfo(year - 1);
+    }
+    return LunarDate2.findLunarDate(jd, monthInfo);
+  };
+  LunarDate2.getSunLongitudeByJd = function(jd) {
+    var T = (jd - 2451545) / 36525;
+    var T2 = T * T;
+    var dr = PI / 180;
+    var M = 357.5291 + 35999.0503 * T - 1559e-7 * T2 - 48e-8 * T * T2;
+    var L0 = 280.46645 + 36000.76983 * T + 3032e-7 * T2;
+    var DL = (1.9146 - 4817e-6 * T - 14e-6 * T2) * Math.sin(dr * M) + (0.019993 - 101e-6 * T) * Math.sin(dr * 2 * M) + 29e-5 * Math.sin(dr * 3 * M);
+    var theta = L0 + DL;
+    var omega = 125.04 - 1934.136 * T;
+    var lambda = theta - 569e-5 - 478e-5 * Math.sin(omega * dr);
+    lambda = lambda * dr;
+    lambda = lambda - PI * 2 * INT(lambda / (PI * 2));
+    return lambda;
+  };
+  LunarDate2.getSunLongitude = function(dayNumber, timeZone) {
+    return INT(LunarDate2.getSunLongitudeByJd(dayNumber - 0.5 - timeZone / 24) / PI * 12);
+  };
   LunarDate2.prototype.getYearCanChi = function() {
     return CAN[(this.year + 6) % 10] + " " + CHI[(this.year + 8) % 12];
+  };
+  LunarDate2.prototype.getMonthCanChi = function() {
+    return CAN[(this.year * 12 + this.month + 3) % 10] + " " + CHI[(this.month + 1) % 12] + " ";
+  };
+  LunarDate2.prototype.getDayCanChi = function() {
+    return CAN[(this.jd + 9) % 10] + " " + CHI[(this.jd + 1) % 12];
+  };
+  LunarDate2.prototype.getGioCanChi = function() {
+    return CAN[(this.jd - 1) * 2 % 10] + CHI[0];
+  };
+  LunarDate2.prototype.getDayOfWeek = function() {
+    return TUAN[(this.jd + 1) % 7];
+  };
+  LunarDate2.prototype.getTietKhi = function() {
+    return TIET_KHI[LunarDate2.getSunLongitude(this.jd + 1, 7)];
   };
   LunarDate2.prototype.getZodiacHour = function() {
     var jd = this.jd;
@@ -253,18 +298,6 @@ var LunarDate = function(_super) {
     }
     var ld = currentMonthInfo.jd + day - 1;
     return SolarDate.fromJd(ld);
-  };
-  LunarDate2.fromSolarDate = function(date) {
-    var _a = date.get(), day = _a.day, month = _a.month, year = _a.year;
-    if (year < 1200 || year > 2199) {
-      return new LunarDate2({ day: 0, month: 0, year: 0 });
-    }
-    var monthInfo = LunarDate2.getYearInfo(year);
-    var jd = Calendar.jdn(new Date(year, month - 1, day));
-    if (jd < monthInfo[0].jd) {
-      monthInfo = LunarDate2.getYearInfo(year - 1);
-    }
-    return LunarDate2.findLunarDate(jd, monthInfo);
   };
   LunarDate2.prototype.get = function() {
     return __assign(__assign({}, _super.prototype.get.call(this)), { name: this.getYearCanChi() });
