@@ -256,7 +256,7 @@ var LunarDate = function(_super) {
     return CAN[(this.year + 6) % 10] + " " + CHI[(this.year + 8) % 12];
   };
   LunarDate2.prototype.getMonthCanChi = function() {
-    return CAN[(this.year * 12 + this.month + 3) % 10] + " " + CHI[(this.month + 1) % 12] + " ";
+    return CAN[(this.year * 12 + this.month + 3) % 10] + " " + CHI[(this.month + 1) % 12] + " " + this.leap ? "(nhu\u1EADn)" : "";
   };
   LunarDate2.prototype.getDayCanChi = function() {
     return CAN[(this.jd + 9) % 10] + " " + CHI[(this.jd + 1) % 12];
@@ -308,4 +308,4 @@ var LunarDate = function(_super) {
 }(Calendar);
 
 export { LunarDate, SolarDate };
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=index.js.map

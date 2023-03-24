@@ -8,7 +8,7 @@ export default [
         plugins: [typescript(), esbuild()],
         output: [
             {
-                file: `dist/bundle.js`,
+                file: `dist/index.js`,
                 format: 'es',
                 sourcemap: true,
                 // exports: 'default',
@@ -20,7 +20,7 @@ export default [
         input: `src/index.ts`,
         plugins: [dts()],
         output: {
-            file: `dist/bundle.d.ts`,
+            file: `dist/index.d.ts`,
             format: 'es',
             name: "Calendar"
         },
