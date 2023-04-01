@@ -1,4 +1,4 @@
-import { LunarDate, SolarDate } from "../../dist/bundle.js";
+import { LunarDate, SolarDate } from "../../dist/index.js";
 
 // const solarDate = new SolarDate({day: 25, month: 3, year: 2023});
 // const lunarDate = LunarDate.fromSolarDate(solarDate);
@@ -27,9 +27,15 @@ import { LunarDate, SolarDate } from "../../dist/bundle.js";
 // console.log(al.getDayOfWeek());
 
 
-const dl = SolarDate.fromJd(2299159);
-const dl2 = SolarDate.fromJd(2299160);
-const dl3 = SolarDate.fromJd(2299161);
+// const dl = SolarDate.fromJd(2299159);
+// const dl2 = SolarDate.fromJd(2299160);
+// const dl3 = SolarDate.fromJd(2299161);
+// console.log(dl);
+// console.log(dl2);
+// console.log(dl3);
+
+const dl = new SolarDate(new Date());
+const al = LunarDate.fromSolarDate(dl);
 console.log(dl);
-console.log(dl2);
-console.log(dl3);
+console.log(al);
+console.log(al.toSolarDate());

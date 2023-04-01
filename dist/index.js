@@ -119,7 +119,6 @@ var SolarDate = function(_super) {
     return year % 100 == 0 && year % 4 == 0 || year % 400 == 0;
   };
   SolarDate2.prototype.toJd = function() {
-    var _a = this; _a.day; _a.month; _a.year;
     return Calendar.jdn(this.toDate());
   };
   SolarDate2.prototype.toDate = function() {
@@ -256,13 +255,13 @@ var LunarDate = function(_super) {
     return CAN[(this.year + 6) % 10] + " " + CHI[(this.year + 8) % 12];
   };
   LunarDate2.prototype.getMonthCanChi = function() {
-    return CAN[(this.year * 12 + this.month + 3) % 10] + " " + CHI[(this.month + 1) % 12] + " " + this.leap ? "(nhu\u1EADn)" : "";
+    return CAN[(this.year * 12 + this.month + 3) % 10] + " " + CHI[(this.month + 1) % 12] + " " + (this.leap ? "(nhu\u1EADn)" : "");
   };
   LunarDate2.prototype.getDayCanChi = function() {
     return CAN[(this.jd + 9) % 10] + " " + CHI[(this.jd + 1) % 12];
   };
   LunarDate2.prototype.getGioCanChi = function() {
-    return CAN[(this.jd - 1) * 2 % 10] + CHI[0];
+    return CAN[(this.jd - 1) * 2 % 10] + " " + CHI[0];
   };
   LunarDate2.prototype.getDayOfWeek = function() {
     return TUAN[(this.jd + 1) % 7];
@@ -287,17 +286,11 @@ var LunarDate = function(_super) {
     return zodiacHours;
   };
   LunarDate2.prototype.toSolarDate = function() {
-    var _a = this, day = _a.day, month = _a.month, year = _a.year;
+    var year = this.year;
     if (year < 1200 || year > 2199) {
       return new SolarDate({ day: 0, month: 0, year: 0 });
     }
-    var monthInfo = this.getYearInfo();
-    var currentMonthInfo = monthInfo[month - 1];
-    if (currentMonthInfo.month != month) {
-      currentMonthInfo = monthInfo[month];
-    }
-    var ld = currentMonthInfo.jd + day - 1;
-    return SolarDate.fromJd(ld);
+    return SolarDate.fromJd(this.jd);
   };
   LunarDate2.prototype.get = function() {
     return __assign(__assign({}, _super.prototype.get.call(this)), { name: this.getYearCanChi() });

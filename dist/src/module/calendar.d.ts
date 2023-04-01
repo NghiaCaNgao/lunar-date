@@ -12,7 +12,7 @@ export default abstract class Calendar {
     protected jd?: number;
     protected leap?: boolean;
     constructor(date: ICalendar);
-    static jdn(date: Date): number;
+    protected static jdn(date: Date): number;
     get(): {
         day: number;
         month: number;

@@ -26,7 +26,7 @@ export default abstract class Calendar {
      * @param {Date} date
      * @returns julian date
      */
-    static jdn(date: Date): number {
+    protected static jdn(date: Date): number {
         const day = date.getDate();
         const month = date.getMonth() + 1;
         const year = date.getFullYear();
@@ -35,7 +35,7 @@ export default abstract class Calendar {
         const y = year + 4800 - a;
         const m = month + 12 * a - 3;
         var jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
-        
+
         // See https://github.com/NghiaCaNgao/lunarDate/wiki/V%E1%BA%A5n-%C4%91%E1%BB%81-chuy%E1%BB%83n-%C4%91%E1%BB%95i-l%E1%BB%8Bch-Julian
         if (jd < 2299161) {
             jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;

@@ -1,6 +1,6 @@
 {
   "name": "@nghiavuive/lunar_date_vi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "nghiacangao",
   "license": "ISC",
   "description": "A tool for converting lunar date and solar date and vice versa",
@@ -22,15 +22,15 @@
     "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@rollup/plugin-typescript": "^11.0.0",
-    "rollup-plugin-dts": "^5.3.0",
-    "rollup-plugin-esbuild": "^5.0.0",
     "ts-loader": "^9.4.2",
     "tslib": "^2.5.0",
     "typescript": "^5.0.2"
   },
   "devDependencies": {
-    "@types/node": "^18.15.3"
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/node": "^18.15.3",
+    "rollup-plugin-dts": "^5.3.0",
+    "rollup-plugin-esbuild": "^5.0.0"
   },
   "directories": {
     "test": "test"

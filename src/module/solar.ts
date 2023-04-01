@@ -17,7 +17,8 @@ export default class SolarDate extends Calendar {
                 year: d.getFullYear()
             });
             this.jd = SolarDate.jdn(date);
-        } else { // ICalendar
+        }
+        else { // ICalendar
             super(date);
             this.jd = SolarDate.jdn(new Date(date.year, date.month - 1, date.day));
         }
@@ -34,7 +35,6 @@ export default class SolarDate extends Calendar {
      * @returns Julian date
      */
     toJd(): number {
-        const { day, month, year } = this;
         return Calendar.jdn(this.toDate());
     }
 

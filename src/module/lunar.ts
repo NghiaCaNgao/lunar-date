@@ -172,7 +172,7 @@ export default class LunarDate extends Calendar {
     getMonthCanChi(): string {
         return Constants.CAN[(this.year * 12 + this.month + 3) % 10] + " "
             + Constants.CHI[(this.month + 1) % 12] + " "
-            + (this.leap) ? "(nhuận)" : "";
+            + (this.leap ? "(nhuận)" : "");
     }
 
     getDayCanChi(): string {
@@ -184,7 +184,7 @@ export default class LunarDate extends Calendar {
     * Can cua gio Chinh Ty (00:00) cua ngay voi JDN nay
     */
     getGioCanChi(): string {
-        return Constants.CAN[(this.jd - 1) * 2 % 10] + Constants.CHI[0];
+        return Constants.CAN[(this.jd - 1) * 2 % 10] + " " + Constants.CHI[0];
     }
 
     getDayOfWeek(): string {
@@ -216,19 +216,26 @@ export default class LunarDate extends Calendar {
     }
 
     toSolarDate(): SolarDate {
-        const { day, month, year } = this;
+        const { year } = this;
 
         if (year < 1200 || year > 2199) {
             return new SolarDate({ day: 0, month: 0, year: 0 });
         }
+        // Code fail
 
-        let monthInfo = this.getYearInfo();
-        let currentMonthInfo = monthInfo[month - 1];
-        if (currentMonthInfo.month != month) {
-            currentMonthInfo = monthInfo[month];
-        }
-        var ld = currentMonthInfo.jd + day - 1;
-        return SolarDate.fromJd(ld);
+        // let monthInfo = this.getYearInfo();
+        // console.log(monthInfo);
+
+        // let currentMonthInfo = monthInfo[month - 1];
+
+        // if (currentMonthInfo.leap) {
+        //     currentMonthInfo = monthInfo[month];
+        // }
+        // console.log("cur: ", currentMonthInfo);
+
+
+        // var ld = currentMonthInfo.jd + day - 1;
+        return SolarDate.fromJd(this.jd);
     }
 
     get() {
