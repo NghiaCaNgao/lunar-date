@@ -7,6 +7,11 @@
 
 - Tải folder dist về là dùng được.
 
+- npm 
+```bash
+npm i @nghiavuive/lunar_date_vi
+```
+
 ## Chuyển đổi từ dương sang âm
 
 ```javascript
