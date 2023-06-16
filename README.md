@@ -30,12 +30,10 @@ console.log(lunarDate.get());
 ## Chuyển từ lịch âm sang dương
 
 ```javascript
-import { LunarDate, SolarDate } from "../../dist/bundle.js";
+const dl = new SolarDate(new Date());
+console.log(LunarDate.fromSolarDate(dl));
 
-const al = new LunarDate({ day: 10, month: 3, year: 2023 });
-const dl = al.toSolarDate().get();
-
-// { day: 30, month: 3, year: 2023, leap: false, julian: 2460034 }
+// LunarDate2 { day: 29, month: 4, year: 2023, leap: false, jd: 2460112 }
 ```
 
 # API
