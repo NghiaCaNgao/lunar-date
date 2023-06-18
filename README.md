@@ -1,13 +1,14 @@
 # Chuyển lịch âm sang lịch dương và ngược lại
 
 - Remake từ code của Hồ Ngọc Đức viết năm 2004
-- Thuật toán: https://www.informatik.uni-leipzig.de/~duc/amlich/calrules.html
+- Thuật toán:
 
 # Cách sử dụng
 
 - Tải folder dist về là dùng được.
 
-- npm 
+- npm
+
 ```bash
 npm i @nghiavuive/lunar_date_vi
 ```
@@ -102,14 +103,13 @@ interface IZodiacHour {
 
 ### Solar constructor 1
 
-- Input [ISolarDate](###ISolarDate) option cho Solar Object
-- Return `Solar Object`
+Tạo thực thể Solar Calendar từ [`ISolarDate`](###ISolarDate). Lưu ý: Nếu nhập sai ngày tháng thì đối thì sẽ báo lỗi `Invalid date`. Chi tiết về ngày hợp lệ xem [tại đây](https://github.com/NghiaCaNgao/lunarDate/wiki/Valid-dae)
 
 ```ts
 public constructor(date: ISolarDate);
 ```
 
-- Ví dụ:
+**Ví dụ:**
 
 ```ts
 new SolarDate({ day: 1, month: 1, year: 2023 });
@@ -117,61 +117,43 @@ new SolarDate({ day: 1, month: 1, year: 2023 });
 
 ### Solar constructor 2
 
-- Input built-in `Date` Object
-- Return `Solar Object`
+Tạo thực thể Solar Calendar từ Date object. Lưu ý: Nếu nhập sai ngày tháng thì đối tượng Date sẽ tự sửa lại. Nếu ngày nhập vào nằm trong khoảng từ **05-14/10/1582** thì sẽ báo lỗi `Invalid date`. Chi tiết về ngày hợp lệ xem [tại đây](https://github.com/NghiaCaNgao/lunarDate/wiki/Valid-dae)
 
 ```ts
 public constructor(date: Date);
 ```
 
-- Ví dụ:
+**Ví dụ:**
 
 ```ts
 new SolarDate(new Date());
 ```
 
-### SolarDate.fromJd
+### SolarDate.fromJd()
 
-- Return Solar Date from Julian Date
+Trả về một thực thể Solar Calendar từ ngày Julian.
 
 ```ts
 static fromJd(jd: number): SolarDate
 ```
 
-- Ví dụ
+**Ví dụ:**
 
 ```ts
 console.log(SolarDate.fromJd(2460035));
 
-// SolarDate2 { day: 31, month: 3, year: 2023, jd: 2460035, leap: false }
+// SolarDate { day: 31, month: 3, year: 2023, jd: 2460035, leap: false }
 ```
 
-### solar.toJd
+### solar.toDate()
 
-- Trả về ngày Julian date tương ứng
-
-```ts
-toJd(): number
-```
-
-- Ví dụ:
-
-```ts
-const solar = new SolarDate(new Date());
-console.log(solar.toJd());
-
-// 2460035
-```
-
-### solar.toDate
-
-- Trả về dạng Date Object
+Chuyển thực thể Solar Calendar về dạng Date
 
 ```ts
 toDate(): Date
 ```
 
-- Ví dụ:
+**Ví dụ:**
 
 ```ts
 const solar = new SolarDate(new Date());
@@ -182,17 +164,17 @@ console.log(solar.toDate());
 
 ### solar.get()
 
-- Lấy thông tin của đối tượng solar
+Lấy thông tin của đối tượng solar
 
 ```ts
-get();
+get(): ISolarDate;
 ```
 
 ```ts
 const dl = new SolarDate(new Date());
 console.log(dl.get());
 
-// { day: 31, month: 3, year: 2023, leap: false, julian: 2460035 }
+// { day: 31, month: 3, year: 2023, leap_year: false, julian: 2460035 }
 ```
 
 ## Lunar class
@@ -358,7 +340,7 @@ console.log(al.getTietKhi());
 - Lấy giờ hoàng đạo
 
 ```ts
-getZodiacHour(): Array<IZodiacHour>
+getZodiacHour(): Array
 ```
 
 - Ví dụ
@@ -377,6 +359,7 @@ console.log(al.getZodiacHour());
 //   { name: 'Dậu', time: [ 17, 19 ] }
 // ]
 ```
+
 ### lunar.toSolarDate()
 
 - Lấy giờ hoàng đạo

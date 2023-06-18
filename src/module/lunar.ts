@@ -1,23 +1,26 @@
 import * as Constants from "./constants";
-import Calendar, { ICalendar, PI, INT } from "./calendar";
+import Calendar, { ICalendarDate, PI, INT } from "./calendar";
 import SolarDate from "./solar";
 
-interface ILunarDate extends ICalendar {
-    leap?: boolean;
+interface ILunarDate extends ICalendarDate {
     jd?: number;
+    leap?: boolean;
 }
 interface IZodiacHour {
     name: string;
     time: number[];
 }
 export default class LunarDate extends Calendar {
+    private leap_month?: boolean
     constructor(date: ILunarDate) {
-        super(date);
+        super(date, "lunar_calendar");
 
-        this.leap = date.leap;
+        // TODO: auto assign values
+        this.leap_month = date.leap;
         this.jd = date.jd;
     }
 
+    // Restricted values
     private static FIRST_DAY = Calendar.jdn(new Date(1200, 0, 31));
     private static LAST_DAY = Calendar.jdn(new Date(2199, 11, 31));
 
@@ -25,7 +28,7 @@ export default class LunarDate extends Calendar {
         if (jd > LunarDate.LAST_DAY
             || jd < LunarDate.FIRST_DAY
             || month_info[0].jd > jd) {
-            throw new Error("Out of calculations");
+            throw new Error("Out of calculation");
         }
 
         let index = month_info.length - 1;
@@ -33,13 +36,13 @@ export default class LunarDate extends Calendar {
             index--;
         }
 
-        let off = jd - month_info[index].jd;
+        let offset = jd - month_info[index].jd;
 
         return new LunarDate({
-            day: month_info[index].day + off,
+            day: month_info[index].day + offset,
             month: month_info[index].month,
             year: month_info[index].year,
-            leap: month_info[index].leap,
+            leap: month_info[index].leap_month,
             jd: jd
         });
     }
@@ -172,7 +175,7 @@ export default class LunarDate extends Calendar {
     getMonthCanChi(): string {
         return Constants.CAN[(this.year * 12 + this.month + 3) % 10] + " "
             + Constants.CHI[(this.month + 1) % 12] + " "
-            + (this.leap ? "(nhuận)" : "");
+            + (this.leap_month ? "(nhuận)" : "");
     }
 
     getDayCanChi(): string {
@@ -188,17 +191,17 @@ export default class LunarDate extends Calendar {
     }
 
     getDayOfWeek(): string {
-        return Constants.TUAN[(this.jd + 1) % 7];
+        return Constants.DAY[(this.jd + 1) % 7];
     }
 
     getTietKhi(): string {
-        return Constants.TIET_KHI[LunarDate.getSunLongitude(this.jd + 1, 7.0)];
+        return Constants.SOLAR_TERMS[LunarDate.getSunLongitude(this.jd + 1, 7.0)];
     }
 
     getZodiacHour(): Array<IZodiacHour> {
         const jd = this.jd;
         const chiOfDay = (jd + 1) % 12;
-        const gioHD = Constants.GIO_HD[chiOfDay % 6];
+        const gioHD = Constants.LUCKY_HOURS[chiOfDay % 6];
 
         let zodiacHours: Array<IZodiacHour> = [];
 
@@ -241,7 +244,7 @@ export default class LunarDate extends Calendar {
     get() {
         return {
             ...super.get(),
-            name: this.getYearCanChi()
+            year_name: this.getYearCanChi()
         }
     }
 }
