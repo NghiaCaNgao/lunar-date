@@ -9,7 +9,7 @@ export type CalendarName = "solar_calendar" | "lunar_calendar"
 export const PI = Math.PI;
 export const INT = (d: number): number => Math.floor(d); // get floor value
 
-export default abstract class Calendar {
+export default abstract class Calendar { // Role: Wrapper class
     protected readonly day: number
     protected readonly month: number
     protected readonly year: number
@@ -24,6 +24,7 @@ export default abstract class Calendar {
         this.name = name;
     }
 
+    //TODO: Chuyển sang Solar và thêm kiểm tra ngày hợp lệ
     /**
      * Convert from Solar date to Julian date.
      * Ref: https://ssd.jpl.nasa.gov/tools/jdc/#/jd
@@ -54,7 +55,7 @@ export default abstract class Calendar {
             day: this.day,
             month: this.month,
             year: this.year,
-            leap: this.leap_year,
+            leap_year: this.leap_year,
             julian: this.jd
         }
     }

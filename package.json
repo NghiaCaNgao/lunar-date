@@ -17,12 +17,13 @@
   "files": [
     "/dist"
   ],
-  "type": "module",
   "scripts": {
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "test": "jest --coverage"
   },
   "dependencies": {
     "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
     "typescript": "^5.0.2"
   },

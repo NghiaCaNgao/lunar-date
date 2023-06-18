@@ -41,25 +41,11 @@ const dl = al.toSolarDate().get();
 
 # API
 
-## Một chút về dịch thuật
-
-[Can chi trong Tiếng Anh](https://nguyenphuocvinhco.com/2019/02/05/nam-hoi-va-nam-ky-hoi-dich-sang-tieng-anh-nhu-the-nao/#:~:text=Trong%20c%E1%BB%A5m%20t%E1%BB%AB%20n%C4%83m%20'K%E1%BB%B7,th%E1%BA%ADp%20can%20th%E1%BA%ADp%20nh%E1%BB%8B%20chi.)
-
-- lịch hoàng đạo: Zodiac calendar
-- 12 con giáp: 12 animal designations
-- can chi: sexagenary cycle
-- can heavenly stems
-- chi earthly branches
-
-## Vấn đề đổi từ Julian Date sang Solar Date và ngược lại
-
-# API
-
 ## Interface
 
-### ICalendar
+### ICalendarDate
 
-Input option cho Calendar Object
+Input option của Calendar Object
 
 ```ts
 export interface ICalendar {

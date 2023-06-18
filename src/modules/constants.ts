@@ -139,4 +139,4 @@ export const SOLAR_TERMS = [
     "Lập thu", "Xử thử", "Bạch lộ", "Thu phân", "Hàn lộ", "Sương giáng", "Lập đông", "Tiểu tuyết", "Đại tuyết",
     "Đông chí", "Tiểu hàn", "Đại hàn", "Lập xuân", "Vũ Thủy", "Kinh trập"];
 
-// See: https://github.com/NghiaCaNgao/lunarDate/wiki/terminology
+// See: https://github.com/NghiaCaNgao/lunarDate/wiki/Terminology

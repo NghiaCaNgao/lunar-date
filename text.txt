@@ -1,0 +1,1 @@
+// TSC: TypeScript's UMD output does not support creating a browser global
