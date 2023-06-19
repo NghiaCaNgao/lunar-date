@@ -1,7 +1,7 @@
 <h1 align="center">Lunar Date</h1> <br>
 <p align="center">Thư viện Javascript chuyển đổi âm lịch - dương lịch</p>
 <p align="center">
-Remake từ <a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrules.html">thuật toán Âm Lịch</a> của Hồ Ngọc Đức viết năm 2004
+Remake từ <b><a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrules.html">Thuật toán Âm Lịch</a></b> của Hồ Ngọc Đức viết năm 2004
 </p>
 <div align="center">
 
@@ -11,13 +11,153 @@ Remake từ <a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrules.
 
 </div>
 
-# Cách sử dụng
+## Table of Contents
 
-- npm
+- [Feature](#features)
+- [Installation](#installation)
+  - [Package manager](#package-manager)
+  - [CDN](#cdn)
+- [Examples](#examples)
+- [API](#api)
+  - [SolarDate](#solardate)
+  - [LunarDate](#lunardate)
+
+## Features
+
+- Chuyển đổi lịch dương sang lịch âm (của Việt Nam) và ngược lại.
+- Tính các thông tin của lịch âm như: giờ Hoàng Đạo, tên của giờ, tháng, năm theo can chi
+
+## Installation
+
+### Package manager
+
+Cài đặt qua NPM
 
 ```bash
-npm i @nghiavuive/lunar_date_vi
+npm install @nghiavuive/lunar_date_vi
 ```
+
+Khi cài đặt xong, ta có thể import bằng `import` hoặc `require`. Trước khi bắt đầu, đảm bảo rằng `package.json` có `"type": "module"`.
+
+```typescript
+import { LunarDate, SolarDate } from "@nghiavuive/lunar_date_vi";
+```
+
+Nếu sử dụng Typescript, lưu ý cấu hình `tsconfig.json` như sau:
+
+```json
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "module": "ESNext"
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules"]
+}
+```
+
+Nếu sử dụng `require`
+
+```javascript
+const calendar = require("@nghiavuive/lunar_date_vi/dist/index.cjs");
+```
+
+### CDN
+
+Sử dụng qua jsDelivr
+
+<!-- FIXME: Sửa lại theo tag -->
+
+```bash
+<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@1a7fb3b/dist/index.umd.js"></script>
+```
+
+## Examples
+
+Sử dụng `ES Module` với Typescript. JavaScript tương tự.
+
+> **Note** Nếu sử dụng `ts-node` thì cần chạy `npx ts-node --esm <filename>`
+
+```typescript
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
+const solar_date = new SolarDate(new Date());
+console.log(solar_date);
+console.log(solar_date.toLunarDate());
+
+const lunar_date = new LunarDate({ day: 10, month: 5, year: 2023 });
+lunar_date.init(); // initialize lunar_date before using 
+console.log(lunar_date.toSolarDate());
+
+// SolarDate {
+//   day: 19,
+//   month: 6,
+//   year: 2023,
+//   name: 'solar_calendar',
+//   jd: 2460115,
+//   leap_year: false
+// }
+
+// LunarDate {
+//   day: 2,
+//   month: 5,
+//   year: 2023,
+//   name: 'lunar_calendar',
+//   jd: 2460115,
+//   leap_year: true,
+//   leap_month: false
+// }
+
+// SolarDate {
+//   day: 27,
+//   month: 6,
+//   year: 2023,
+//   name: 'solar_calendar',
+//   jd: 2460123,
+//   leap_year: false
+// }
+```
+
+Nếu sử dụng `CommonJs`
+
+```javascript
+const _calendar = require("@nghiavuive/lunar_date_vi/dist/index.cjs");
+
+var solar_date = new _calendar.SolarDate(new Date());
+var lunar_date = solar_date.toLunarDate();
+
+console.log(lunar_date.getMonthName()); // Mậu Ngọ
+```
+
+Nếu sử dụng `UMD`
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@1a7fb3b/dist/index.umd.js"></script>
+<script>
+  var lunar_date = new window.calendar.LunarDate({
+    day: 1,
+    month: 1,
+    year: 2020,
+  });
+  lunar_date.init();
+  console.log(lunar_date);
+</script>
+
+<!-- SolarDate {
+  day: 1,
+  month: 1,
+  year: 2020,
+  name: 'lunar_calendar',
+  jd: 2458874,
+  leap_year: false,
+  leap_month: false,
+} -->
+```
+
+## API
+
+### SolarDate
 
 ## Chuyển đổi từ dương sang âm
 
