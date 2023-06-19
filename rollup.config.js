@@ -3,13 +3,15 @@ import esbuild from 'rollup-plugin-esbuild'
 import typescript from '@rollup/plugin-typescript'
 import terser from '@rollup/plugin-terser';
 
-const mode = "production" // development
+const mode = "production"
+// const mode = "development"
+
 const root_dir = mode === "production" ? "dist" : "bin/dist"
 
 export default [
     {
         input: `src/index.ts`,
-        plugins: [typescript(), esbuild(), terser()],
+        plugins: [typescript(), esbuild()],
         output: [
             {
                 file: `${root_dir}/index.js`,

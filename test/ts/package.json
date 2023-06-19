@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "run": "npx ts-node --esm demo.ts"
+    "start": "npx ts-node --esm demo.ts"
   },
   "type": "module",
   "keywords": [],
