@@ -21,18 +21,25 @@ export default class LunarDate extends Calendar {
         this.leap_month = date.leap_month;
         this.leap_year = date.leap_year;
         this.jd = date.jd;
+
+        //TODO: Có thể bỏ init nếu biến tất cả thành non-static
     }
 
     /**
      * Initialize the instance.
      */
-    init() {
+    init(force_change: boolean = false) {
         const recommendation = LunarDate.getRecommended(
             { day: this.day, month: this.month, year: this.year });
-
-        this.leap_month = this.leap_month || recommendation.leap_month;
-        this.leap_year = this.leap_year || recommendation.leap_year;
-        this.jd = this.jd || recommendation.jd;
+        if (force_change) {
+            this.leap_month = recommendation.leap_month;
+            this.leap_year = recommendation.leap_year;
+            this.jd = recommendation.jd;
+        } else {
+            this.leap_month = this.leap_month || recommendation.leap_month;
+            this.leap_year = this.leap_year || recommendation.leap_year;
+            this.jd = this.jd || recommendation.jd;
+        }
     }
 
     /**
@@ -105,7 +112,7 @@ export default class LunarDate extends Calendar {
      */
     private static generateJdOfNewYear(year: number, year_code: number): number {
         let offsetOfTet = year_code >> 17;
-        let currentJD = Calendar.jdn(new Date(year, 0, 1)) + offsetOfTet;
+        let currentJD = SolarDate.jdn(new Date(year, 0, 1)) + offsetOfTet;
         return currentJD
     }
 
@@ -187,28 +194,6 @@ export default class LunarDate extends Calendar {
         });
     }
 
-
-    /**
-     * Convert Solar Calendar to Lunar Calendar.
-     * @param date Solar Calendar
-     * @returns Lunar Calendar
-     */
-    static fromSolarDate(date: SolarDate): LunarDate {
-        const { day, month, year } = date.get();
-
-        let year_code = LunarDate.getYearCode(year);
-        let lunar_months = LunarDate.decodeLunarYear(year, year_code);
-        let jd = Calendar.jdn(new Date(year, month - 1, day));
-
-        // TODO: Test this
-        // Vì năm dương lịch đã sang năm mới nhưng năm âm lịch chưa sang nên phải lùi năm âm lịch.
-        if (jd < lunar_months[0].jd) {
-            year_code = LunarDate.getYearCode(year - 1);
-            lunar_months = LunarDate.decodeLunarYear(year - 1, year_code);
-        }
-        return LunarDate.findLunarDate(jd, lunar_months);
-    }
-
     /**
      * Compute the longitude of the sun at any time.
      * @param jd 
@@ -245,6 +230,26 @@ export default class LunarDate extends Calendar {
      */
     private static getSunLongitude(jd: number, timeZone: number): number {
         return INT(LunarDate.getSunLongitudeByJd(jd - 0.5 - timeZone / 24.0) / PI * 12);
+    }
+
+    /**
+     * Convert Solar Calendar to Lunar Calendar.
+     * @param date Solar Calendar
+     * @returns Lunar Calendar
+     */
+    static fromSolarDate(date: SolarDate): LunarDate {
+        const { day, month, year } = date.get();
+
+        let year_code = LunarDate.getYearCode(year);
+        let lunar_months = LunarDate.decodeLunarYear(year, year_code);
+        let jd = SolarDate.jdn(new Date(year, month - 1, day));
+
+        // Vì năm dương lịch đã sang năm mới nhưng năm âm lịch chưa sang nên phải lùi năm âm lịch.
+        if (jd < lunar_months[0].jd) {
+            year_code = LunarDate.getYearCode(year - 1);
+            lunar_months = LunarDate.decodeLunarYear(year - 1, year_code);
+        }
+        return LunarDate.findLunarDate(jd, lunar_months);
     }
 
     /**
@@ -299,7 +304,7 @@ export default class LunarDate extends Calendar {
         return Constants.SOLAR_TERMS[LunarDate.getSunLongitude(this.jd + 1, 7.0)];
     }
 
-    
+
     /**
      * Get lucky hours of the day.
      * @returns luck hours
@@ -325,10 +330,24 @@ export default class LunarDate extends Calendar {
         return zodiacHours;
     }
 
+    setDate(date: ILunarDate): void {
+        //TODO: Check if date is valid or not
+        this.set(date);
+        this.init(true);
+    }
+
+    /**
+     * Convert to Solar Date.
+     * @returns Solar Date
+     */
     toSolarDate(): SolarDate {
         return SolarDate.fromJd(this.jd);
     }
 
+    /**
+     * Returns the info of this instance in details
+     * @returns 
+     */
     get() {
         return {
             ...super.get(),

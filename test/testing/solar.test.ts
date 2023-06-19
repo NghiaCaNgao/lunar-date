@@ -1,5 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 import SolarDate, { ISolarDate } from "@src/solar";
+import LunarDate, { ILunarDate } from '@src/lunar';
 
 describe("Test cases: `SolarDate`", () => {
     test("Creating instance", () => {
@@ -88,5 +89,41 @@ describe("Test cases: `SolarDate`", () => {
 
         expect(() => SolarDate.fromJd(2159386)).toThrowError("Out of calculation")
         expect(() => SolarDate.fromJd(2524594)).toThrowError("Out of calculation")
+    })
+
+    test("Tests `setDate` func", () => {
+        let date = new Date(2020, 1, 1); // 2020-02-01
+        let solar_date = new SolarDate(date);
+
+        solar_date.setDate({ day: 1, month: 4, year: 2026 }) // 2026-04-01
+        expect(solar_date.get()).toEqual({
+            day: 1, month: 4, year: 2026,
+            leap_year: false, julian: 2461132,
+            name: "solar_calendar"
+        });
+
+        solar_date.setDate(new Date(2020, 4, 6)) // 2020-05-06
+        expect(solar_date.get()).toEqual({
+            day: 6, month: 5, year: 2020,
+            leap_year: true, julian: 2458976,
+            name: "solar_calendar"
+        });
+
+        expect(() => solar_date.setDate(new Date(1582, 9, 10))).toThrowError("Invalid date")
+        expect(() => solar_date.setDate({ day: 10, month: 10, year: 1582 })).toThrowError("Invalid date")
+    })
+
+    test("Tests `jdn` func", () => {
+        expect(SolarDate['jdn']({ day: 1, month: 10, year: 2022 })).toEqual(2459854) // Apply for time: 12:00:00
+        expect(SolarDate['jdn'](new Date(2022, 9, 1))).toEqual(2459854)
+        expect(SolarDate['jdn']({ day: 1, month: 10, year: 1582 })).toEqual(2299157) // Apply for time: 12:00:00
+    })
+
+    test("Tests `toLunarDate` func", () => {
+        const al = new LunarDate({ day: 2, month: 5, year: 2023 }); // 2023-05-02
+        const dl = new SolarDate(new Date(2023, 5, 19)); // 2023-06-19
+        al.init()
+
+        expect(dl.toLunarDate()).toEqual(al);
     })
 })

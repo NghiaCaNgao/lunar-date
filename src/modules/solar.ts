@@ -1,10 +1,11 @@
 import Calendar, { ICalendarDate, INT } from "./calendar";
+import LunarDate from "./lunar";
 
 export interface ISolarDate extends ICalendarDate { }
 
 export default class SolarDate extends Calendar {
-    public static readonly FIRST_DAY: number = Calendar.jdn(new Date(1200, 0, 31)); //1200-1-31
-    public static readonly LAST_DAY: number = Calendar.jdn(new Date(2199, 11, 31)); //2199-12-31
+    public static readonly FIRST_DAY: number = SolarDate.jdn(new Date(1200, 0, 31)); //1200-1-31
+    public static readonly LAST_DAY: number = SolarDate.jdn(new Date(2199, 11, 31)); //2199-12-31
 
     public constructor(date: ISolarDate); // Eg., new SolarDate({day:1, month:1, year:2012})
     public constructor(date: Date); // Eg., new SolarDate(new Date());
@@ -89,15 +90,6 @@ export default class SolarDate extends Calendar {
     }
 
     /**
-     * Convert to Date object
-     * @returns Date object
-     */
-    toDate(): Date {
-        const { day, month, year } = this;
-        return new Date(year, month - 1, day);
-    }
-
-    /**
      * Create a new Solar Date object from the Julian date
      * @param {number} jd Julian date
      * @returns {SolarDate}
@@ -128,5 +120,68 @@ export default class SolarDate extends Calendar {
         return new SolarDate({ day, month, year });
     }
 
-    //TODO: create toLunar date function
+    /**
+     * Convert from Solar date to Julian date.
+     * Ref: https://ssd.jpl.nasa.gov/tools/jdc/#/jd
+     * @param {Date} date
+     * @returns julian date
+    */
+    //TODO: kiểm tra ngày hợp lệ
+    static jdn(date: ICalendarDate | Date): number {
+        const day = date instanceof Date ? date.getDate() : date.day;
+        const month = date instanceof Date ? date.getMonth() + 1 : date.month;
+        const year = date instanceof Date ? date.getFullYear() : date.year;
+
+        const a = INT((14 - month) / 12);
+        const y = year + 4800 - a;
+        const m = month + 12 * a - 3;
+        var jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+
+        // https://github.com/NghiaCaNgao/lunarDate/wiki/Julian-calendar-conversion-problem
+        if (jd < 2299161) {
+            jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
+        }
+
+        return jd;
+    }
+
+    /**
+     * Convert to Date object
+     * @returns Date object
+     */
+    toDate(): Date {
+        const { day, month, year } = this;
+        return new Date(year, month - 1, day);
+    }
+
+    /**
+     * Convert to Lunar date
+     */
+    toLunarDate() {
+        return LunarDate.fromSolarDate(this);
+    }
+
+    setDate(date: ICalendarDate | Date): void {
+        if (date instanceof Date) {
+            if (SolarDate.isValidDate(date)) {
+                this.set({
+                    day: date.getDate(),
+                    month: date.getMonth() + 1,
+                    year: date.getFullYear()
+                })
+                this.jd = SolarDate.jdn(date);
+            } else {
+                throw new Error("Invalid date")
+            }
+        }
+        else {
+            if (SolarDate.isValidDate(date)) {
+                this.set(date);
+                this.jd = SolarDate.jdn(new Date(date.year, date.month - 1, date.day));
+            } else {
+                throw new Error("Invalid date")
+            }
+        }
+        this.leap_year = SolarDate.isLeapYear(this.year);
+    }
 }
