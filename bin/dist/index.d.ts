@@ -68,11 +68,10 @@ declare class LunarDate extends Calendar {
     getDayOfWeek(): string;
     getSolarTerm(): string;
     getLuckyHours(): Array<ILuckyHour>;
-    toSolarDate(): SolarDate;
     setDate(date: ILunarDate): void;
+    toSolarDate(): SolarDate;
     get(): {
         year_name: string;
-        leap_month: boolean;
         name: CalendarName;
         day: number;
         month: number;
