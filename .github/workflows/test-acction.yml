@@ -1,0 +1,13 @@
+name: test-action
+run-name: ${{ github.actor }} is learning GitHub Actions
+on: [push]
+jobs:
+  test-modules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "latest"
+      - run: npm install
+      - run: npm run test
