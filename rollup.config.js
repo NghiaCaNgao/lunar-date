@@ -1,12 +1,12 @@
 import dts from 'rollup-plugin-dts'
 import esbuild from 'rollup-plugin-esbuild'
 import typescript from '@rollup/plugin-typescript'
-import terser from '@rollup/plugin-terser';
+import terser from '@rollup/plugin-terser'; // For minify
 
-const mode = "production"
+const production = true
 // const mode = "development"
 
-const root_dir = mode === "production" ? "dist" : "bin/dist"
+const root_dir = production ? "dist" : "bin/dist"
 
 export default [
     {
@@ -16,13 +16,28 @@ export default [
             {
                 file: `${root_dir}/index.js`,
                 format: 'cjs',
-                sourcemap: true,
-
+                sourcemap: !production
             },
             {
                 file: `${root_dir}/index.mjs`,
                 format: 'es',
-                sourcemap: true
+                sourcemap: !production
+            },
+        ]
+    },
+    {
+        input: `src/index.ts`,
+        plugins: [typescript(), esbuild(), terser()],
+        output: [
+            {
+                file: `${root_dir}/index.min.js`,
+                format: 'cjs',
+                sourcemap: !production
+            },
+            {
+                file: `${root_dir}/index.min.mjs`,
+                format: 'es',
+                sourcemap: !production
             },
         ]
     },

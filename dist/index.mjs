@@ -396,4 +396,3 @@ class LunarDate extends Calendar {
 }
 
 export { LunarDate, SolarDate };
-//# sourceMappingURL=index.mjs.map

@@ -399,4 +399,3 @@ class LunarDate extends Calendar {
 
 exports.LunarDate = LunarDate;
 exports.SolarDate = SolarDate;
-//# sourceMappingURL=index.js.map
