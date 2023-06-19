@@ -1,11 +1,17 @@
-# Chuyển lịch âm sang lịch dương và ngược lại
+<h1 align="center">Lunar Date</h1> <br>
+<p align="center">Thư viện Javascript chuyển đổi âm lịch - dương lịch</p>
+<p align="center">
+Remake từ <a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrules.html">thuật toán Âm Lịch</a> của Hồ Ngọc Đức viết năm 2004
+</p>
+<div align="center">
 
-- Remake từ code của Hồ Ngọc Đức viết năm 2004
-- Thuật toán:
+![npm](https://img.shields.io/npm/v/%40nghiavuive%2Flunar_date_vi)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/%40nghiavuive%2Flunar_date_vi)
+![npm downloads](https://img.shields.io/npm/dy/@nghiavuive/lunar_date_vi)
+
+</div>
 
 # Cách sử dụng
-
-- Tải folder dist về là dùng được.
 
 - npm
 

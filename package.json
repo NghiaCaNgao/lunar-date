@@ -1,6 +1,6 @@
 {
   "name": "@nghiavuive/lunar_date_vi",
-  "version": "1.0.7",
+  "version": "1.0.10",
   "author": "nghiacangao",
   "license": "ISC",
   "description": "A tool for converting lunar date and solar date and vice versa",
@@ -20,8 +20,10 @@
     "/dist"
   ],
   "scripts": {
-    "build": "rimraf --glob './dist' && rollup -c rollup.config.js",
-    "build_test": "rimraf --glob './bin' && rollup -c rollup.config.js",
+    "rm": "if exist 'dist' rmdir dist /s /q",
+    "rm_test": "if exist 'dist' rmdir dist /s /q",
+    "build": "npm run rm && rollup -c rollup.config.js",
+    "build_test": "npm run rm_test && rollup -c rollup.config.js",
     "test": "jest --coverage"
   },
   "type": "module",
