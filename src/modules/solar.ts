@@ -3,6 +3,9 @@ import Calendar, { ICalendarDate, INT } from "./calendar";
 export interface ISolarDate extends ICalendarDate { }
 
 export default class SolarDate extends Calendar {
+    public static readonly FIRST_DAY: number = Calendar.jdn(new Date(1200, 0, 31)); //1200-1-31
+    public static readonly LAST_DAY: number = Calendar.jdn(new Date(2199, 11, 31)); //2199-12-31
+
     public constructor(date: ISolarDate); // Eg., new SolarDate({day:1, month:1, year:2012})
     public constructor(date: Date); // Eg., new SolarDate(new Date());
 
@@ -42,31 +45,46 @@ export default class SolarDate extends Calendar {
         return (year % 100 != 0 && year % 4 == 0) || year % 400 == 0;
     }
 
-    //TODO: Insert start and end date
     /**
      * Check if the date is valid or not.
      * @param {Date} date given in ICalendarDate format
      * @returns True if the date is valid
      */
     private static isValidDate(date: ICalendarDate | Date): boolean {
-        if (date instanceof Date) {
+        function isInBounds(date: Date): boolean {
             // 05-14/10/1582 is not existed in the history
             if (date.getFullYear() === 1582 && date.getMonth() === 9 &&
                 date.getDate() >= 5 && date.getDate() <= 14) {
                 return false;
-            } else return true;
-        } else {
-            const test_date = new Date(date.year, date.month - 1, date.day);
+            }
 
-            // 05-14/10/1582 is not existed in the history
-            if (date.year === 1582 && date.month === 10 &&
-                date.day >= 5 && date.day <= 14) {
+            // 31-01-1200 -> 21-12-2199 is valid date
+            if (date.getFullYear() === 1200) {
+                if (date.getMonth() === 0) {
+                    if (date.getDate() < 31) {
+                        return false;
+                    }
+                }
+            } else if (date.getFullYear() < 1200 || date.getFullYear() > 2199) {
                 return false;
             }
 
-            return test_date.getFullYear() === date.year &&
-                test_date.getMonth() === date.month - 1 &&
-                test_date.getDate() === date.day
+            return true;
+        }
+
+        if (date instanceof Date) {
+            return isInBounds(date);
+        } else {
+            const test_date = new Date(date.year, date.month - 1, date.day);
+
+            // Check if input is correct syntax
+            if (test_date.getFullYear() !== date.year ||
+                test_date.getMonth() !== date.month - 1 ||
+                test_date.getDate() !== date.day) {
+                return false
+            }
+
+            return isInBounds(test_date);
         }
     }
 
@@ -79,13 +97,16 @@ export default class SolarDate extends Calendar {
         return new Date(year, month - 1, day);
     }
 
-    //TODO: Jd is not in valid date ??
     /**
      * Create a new Solar Date object from the Julian date
      * @param {number} jd Julian date
      * @returns {SolarDate}
      */
     static fromJd(jd: number): SolarDate {
+        if (jd < 2159387 || jd > 2524593) {
+            throw new Error("Out of calculation");
+        }
+
         let A: number;
 
         if (jd < 2299161) {

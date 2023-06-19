@@ -179,13 +179,37 @@ const al = new LunarDate({ day: 1, month: 1, year: 2023 });
 
 ### SolarDate.fromSolarDate()
 
-- Chuyển từ dương lịch sang âm lịch
+Chuyển từ dương lịch sang âm lịch
+
+```ts
+static fromSolarDate(date: SolarDate): LunarDate
+```
+
+**Ví dụ:**
 
 ```ts
 const dl = new SolarDate(new Date());
 console.log(LunarDate.fromSolarDate(dl));
 
 // LunarDate2 { day: 10, month: 2, year: 2023, leap: true, jd: 2460035 }
+```
+
+### init()
+
+Khởi tạo giá trị cho thực thể
+
+```ts
+init();
+```
+
+**Ví dụ:**
+
+```ts
+let lunar1 = new LunarDate({ day: 2, month: 5, year: 2023 });
+lunar1.init();
+console.log(lunar1);
+
+// {"name": "lunar_calendar", "day": 2, "month": 5, "year": 2023, "jd": 2460115, "leap_month": false, "leap_year": true}
 ```
 
 ### lunar.get()

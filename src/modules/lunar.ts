@@ -2,91 +2,74 @@ import * as Constants from "./constants";
 import Calendar, { ICalendarDate, PI, INT } from "./calendar";
 import SolarDate from "./solar";
 
-interface ILunarDate extends ICalendarDate {
+export interface ILunarDate extends ICalendarDate {
     jd?: number;
-    leap?: boolean;
+    leap_month?: boolean;
+    leap_year?: boolean;
 }
-interface IZodiacHour {
+interface ILuckyHour {
     name: string;
     time: number[];
 }
 export default class LunarDate extends Calendar {
     private leap_month?: boolean
+
     constructor(date: ILunarDate) {
+        // TODO: check if date is valid or not
         super(date, "lunar_calendar");
 
-        // TODO: auto assign values
-        this.leap_month = date.leap;
+        this.leap_month = date.leap_month;
+        this.leap_year = date.leap_year;
         this.jd = date.jd;
     }
 
-    // Restricted values
-    private static FIRST_DAY = Calendar.jdn(new Date(1200, 0, 31));
-    private static LAST_DAY = Calendar.jdn(new Date(2199, 11, 31));
+    /**
+     * Initialize the instance.
+     */
+    init() {
+        const recommendation = LunarDate.getRecommended(
+            { day: this.day, month: this.month, year: this.year });
 
-    private static findLunarDate(jd: number, month_info: Array<LunarDate>) {
-        if (jd > LunarDate.LAST_DAY
-            || jd < LunarDate.FIRST_DAY
-            || month_info[0].jd > jd) {
-            throw new Error("Out of calculation");
-        }
-
-        let index = month_info.length - 1;
-        while (jd < month_info[index].jd) {
-            index--;
-        }
-
-        let offset = jd - month_info[index].jd;
-
-        return new LunarDate({
-            day: month_info[index].day + offset,
-            month: month_info[index].month,
-            year: month_info[index].year,
-            leap: month_info[index].leap_month,
-            jd: jd
-        });
+        this.leap_month = this.leap_month || recommendation.leap_month;
+        this.leap_year = this.leap_year || recommendation.leap_year;
+        this.jd = this.jd || recommendation.jd;
     }
 
-    private static decodeLunarYear(year: number, yearCode: number): Array<LunarDate> {
-        let monthInfo = new Array<LunarDate>(); // A list of months specifying whether a month is leap or not
-        let monthLengths = new Array(29, 30);
-        let regularMonths = new Array(12); // create 12 cells corresponding to 12 months
+    /**
+     * Return the recommended info.
+     * @param date Lunar Date
+     * @returns recommended info
+     */
+    private static getRecommended(date: ICalendarDate): ILunarDate {
+        const year_code = LunarDate.getYearCode(date.year);
+        const lunar_months = LunarDate.decodeLunarYear(date.year, year_code)
 
-        let offsetOfTet = yearCode >> 17;
-        let leapMonth = yearCode & 0xf;
-        let leapMonthLength = monthLengths[yearCode >> 16 & 0x1];
-        let currentJD = Calendar.jdn(new Date(year, 0, 1)) + offsetOfTet;
-
-        let j = yearCode >> 4;
-        for (let i = 0; i < 12; i++) {
-            regularMonths[12 - i - 1] = monthLengths[j & 0x1];
-            j >>= 1; // j = j >> 1
+        const rcm = {
+            jd: 0,
+            leap_month: false,
+            leap_year: false
         }
 
-        for (let month = 1; month <= 12; month++) {
-            const date = { day: 1, month, year };
-
-            monthInfo.push(new LunarDate({
-                ...date,
-                leap: false,
-                jd: currentJD
-            }));
-            currentJD += regularMonths[month - 1];
-
-            if (leapMonth == month) {
-                monthInfo.push(new LunarDate({
-                    ...date,
-                    leap: true,
-                    jd: currentJD
-                }));
-                currentJD += leapMonthLength;
+        for (let i = 0; i < lunar_months.length; i++) {
+            if (lunar_months[i].month === date.month) {
+                rcm.jd = lunar_months[i].jd + date.day - 1;
+                rcm.leap_month = lunar_months[i].leap_month;
+                rcm.leap_year = lunar_months[i].leap_year;
             }
         }
 
-        return monthInfo;
+        return {
+            ...date,
+            ...rcm
+        } as ILunarDate
     }
 
-    private static getYearInfo(year: number): Array<LunarDate> {
+    /**
+     * Get year code from given year.
+     * @param year 
+     * @returns year code
+     */
+    private static getYearCode(year: number): number {
         let yearCode: number;
 
         if (year < 1300) {
@@ -110,32 +93,128 @@ export default class LunarDate extends Calendar {
         } else {
             yearCode = Constants.C22[year - 2100];
         }
-        return this.decodeLunarYear(year, yearCode);
+
+        return yearCode;
     }
 
-    private getYearInfo(): Array<LunarDate> {
-        return LunarDate.getYearInfo(this.year);
+    /**
+     * Return a JD date of Lunar New Year (year-01-01 in lunar date).
+     * @param year 
+     * @param year_code 
+     * @returns JD date of Lunar New Year
+     */
+    private static generateJdOfNewYear(year: number, year_code: number): number {
+        let offsetOfTet = year_code >> 17;
+        let currentJD = Calendar.jdn(new Date(year, 0, 1)) + offsetOfTet;
+        return currentJD
     }
 
+    /**
+     * Create a list of lunar months in given year.
+     * @param year 
+     * @param year_code 
+     * @returns list of lunar months
+     */
+    private static decodeLunarYear(year: number, year_code: number): Array<LunarDate> {
+        let lunar_months = new Array<LunarDate>(); // A list of lunar months
+        let month_len = new Array(29, 30); // A month has 29 or 30 days
+        let reg_month_lens = new Array(12); // Create 12 cells specifying the length of the lunar month
+
+        let leapMonth = year_code & 0xf; // Find leap month in the year. Eg., In the year 2023, the leap month is 02
+        let leapMonthLength = month_len[year_code >> 16 & 0x1]; // The length of the leap month
+        let currentJD = LunarDate.generateJdOfNewYear(year, year_code) // Get the julian date of solar date: year-01-01
+
+        // Build a list of length of 12 regular month 
+        let j = year_code >> 4;
+        for (let i = 0; i < 12; i++) {
+            reg_month_lens[12 - i - 1] = month_len[j & 0x1];
+            j >>= 1;
+        }
+
+        // Build a list of info of each month in the year
+        for (let month = 1; month <= 12; month++) {
+            const date: ICalendarDate = { day: 1, month, year };
+
+            lunar_months.push(new LunarDate({
+                ...date,
+                leap_month: false,
+                leap_year: leapMonth !== 0,
+                jd: currentJD
+            }));
+            currentJD += reg_month_lens[month - 1];
+
+            // Add a leap month to list
+            if (leapMonth === month) {
+                lunar_months.push(new LunarDate({
+                    ...date,
+                    leap_month: true,
+                    leap_year: leapMonth !== 0,
+                    jd: currentJD
+                }));
+                currentJD += leapMonthLength;
+            }
+        }
+
+        return lunar_months;
+    }
+
+    /**
+     * Find exactly the lunar date from jd and lunar month.
+     * @param jd 
+     * @param lunar_months 
+     * @returns Exactly the lunar date
+     */
+    private static findLunarDate(jd: number, lunar_months: Array<LunarDate>) {
+        // TODO: find test case
+        if (lunar_months[0].jd > jd) {
+            throw new Error("Out of calculation");
+        }
+
+        let index = lunar_months.length - 1;
+        while (jd < lunar_months[index].jd) {
+            index--;
+        }
+
+        let offset = jd - lunar_months[index].jd;
+
+        return new LunarDate({
+            day: lunar_months[index].day + offset,
+            month: lunar_months[index].month,
+            year: lunar_months[index].year,
+            leap_month: lunar_months[index].leap_month,
+            leap_year: lunar_months[index].leap_year,
+            jd: jd
+        });
+    }
+
+
+    /**
+     * Convert Solar Calendar to Lunar Calendar.
+     * @param date Solar Calendar
+     * @returns Lunar Calendar
+     */
     static fromSolarDate(date: SolarDate): LunarDate {
         const { day, month, year } = date.get();
-        if (year < 1200 || year > 2199) {
-            return new LunarDate({ day: 0, month: 0, year: 0 });
-        }
 
-        let monthInfo = LunarDate.getYearInfo(year);
+        let year_code = LunarDate.getYearCode(year);
+        let lunar_months = LunarDate.decodeLunarYear(year, year_code);
         let jd = Calendar.jdn(new Date(year, month - 1, day));
 
-        if (jd < monthInfo[0].jd) {
-            monthInfo = LunarDate.getYearInfo(year - 1);
+        // TODO: Test this
+        // Vì năm dương lịch đã sang năm mới nhưng năm âm lịch chưa sang nên phải lùi năm âm lịch.
+        if (jd < lunar_months[0].jd) {
+            year_code = LunarDate.getYearCode(year - 1);
+            lunar_months = LunarDate.decodeLunarYear(year - 1, year_code);
         }
-        return LunarDate.findLunarDate(jd, monthInfo);
+        return LunarDate.findLunarDate(jd, lunar_months);
     }
 
-    /* Compute the longitude of the sun at any time.
-    * Parameter: floating number jdn, the number of days since 1/1/4713 BC noon
-    * Algorithm from: "Astronomical Algorithms" by Jean Meeus, 1998
-    */
+    /**
+     * Compute the longitude of the sun at any time.
+     * @param jd 
+     * @returns 
+     * @algorithm "Astronomical Algorithms" by Jean Meeus, 1998
+     */
     private static getSunLongitudeByJd(jd: number): number {
         const T = (jd - 2451545.0) / 36525; // Time in Julian centuries from 2000-01-01 12:00:00 GMT
         const T2 = T * T;
@@ -157,57 +236,85 @@ export default class LunarDate extends Calendar {
         return lambda;
     }
 
-    /* Compute the sun segment at start (00:00) of the day with the given integral Julian day number.
-    * The time zone if the time difference between local time and UTC: 7.0 for UTC+7:00.
-    * The function returns a number between 0 and 23.
-    * From the day after March equinox and the 1st major term after March equinox, 0 is returned.
-    * After that, return 1, 2, 3 ...
-    */
-    private static getSunLongitude(dayNumber: number, timeZone: number): number {
-        return INT(LunarDate.getSunLongitudeByJd(dayNumber - 0.5 - timeZone / 24.0) / PI * 12);
+    /**
+     * Compute the sun segment at start (00:00) of the day with the given integral Julian day number.
+     * @param jd 
+     * @param timeZone 
+     * @returns sun segment
+     * @note From the day after March equinox and the 1st major term after March equinox, 0 is returned. After that, return 1, 2, 3 ...
+     */
+    private static getSunLongitude(jd: number, timeZone: number): number {
+        return INT(LunarDate.getSunLongitudeByJd(jd - 0.5 - timeZone / 24.0) / PI * 12);
     }
 
-    getYearCanChi(): string {
+    /**
+     * Return year's name in Sexagenary cycle (Can Chi).
+     * @returns year's name in Sexagenary cycle
+     */
+    getYearName(): string {
         return Constants.CAN[(this.year + 6) % 10] + " "
             + Constants.CHI[(this.year + 8) % 12];
     }
 
-    getMonthCanChi(): string {
+    /**
+     * Return month's name in Sexagenary cycle (Can Chi).
+     * @returns month's name in Sexagenary cycle
+     */
+    getMonthName(): string {
         return Constants.CAN[(this.year * 12 + this.month + 3) % 10] + " "
-            + Constants.CHI[(this.month + 1) % 12] + " "
-            + (this.leap_month ? "(nhuận)" : "");
+            + Constants.CHI[(this.month + 1) % 12]
+            + (this.leap_month ? " (nhuận)" : "");
     }
 
-    getDayCanChi(): string {
+    /**
+     * Return day's name in Sexagenary cycle (Can Chi).
+     * @returns day's name in Sexagenary cycle
+     */
+    getDayName(): string {
         return Constants.CAN[(this.jd + 9) % 10] + " "
             + Constants.CHI[(this.jd + 1) % 12];
     }
 
-    /*
-    * Can cua gio Chinh Ty (00:00) cua ngay voi JDN nay
-    */
-    getGioCanChi(): string {
+    /**
+      * Return hour's name in Sexagenary cycle (Can Chi). Heavenly stem is set to 'Ty'.
+      * @returns hour's name in Sexagenary cycle
+      */
+    getHourName(): string {
         return Constants.CAN[(this.jd - 1) * 2 % 10] + " " + Constants.CHI[0];
     }
 
+    /**
+     * Return the day's name in week.
+     * @returns day's name in week
+     */
     getDayOfWeek(): string {
         return Constants.DAY[(this.jd + 1) % 7];
     }
 
-    getTietKhi(): string {
+    /**
+     * Get Solar Term (Tiết Khí).
+     * @returns solar term
+     */
+    getSolarTerm(): string {
         return Constants.SOLAR_TERMS[LunarDate.getSunLongitude(this.jd + 1, 7.0)];
     }
 
-    getZodiacHour(): Array<IZodiacHour> {
+    
+    /**
+     * Get lucky hours of the day.
+     * @returns luck hours
+     */
+    // TODO: Tên giờ và thêm cả giờ hắc đạo
+    getLuckyHours(): Array<ILuckyHour> {
         const jd = this.jd;
         const chiOfDay = (jd + 1) % 12;
         const gioHD = Constants.LUCKY_HOURS[chiOfDay % 6];
 
-        let zodiacHours: Array<IZodiacHour> = [];
+        let zodiacHours: Array<ILuckyHour> = [];
 
         for (var i = 0; i < 12; i++) {
             if (gioHD.charAt(i) == '1') {
-                var zodiac: IZodiacHour = { name: "", time: [] };
+                var zodiac: ILuckyHour = { name: "", time: [] };
                 zodiac.name = Constants.CHI[i];
                 zodiac.time.push((i * 2 + 23) % 24);
                 zodiac.time.push((i * 2 + 1) % 24);
@@ -219,32 +326,13 @@ export default class LunarDate extends Calendar {
     }
 
     toSolarDate(): SolarDate {
-        const { year } = this;
-
-        if (year < 1200 || year > 2199) {
-            return new SolarDate({ day: 0, month: 0, year: 0 });
-        }
-        // Code fail
-
-        // let monthInfo = this.getYearInfo();
-        // console.log(monthInfo);
-
-        // let currentMonthInfo = monthInfo[month - 1];
-
-        // if (currentMonthInfo.leap) {
-        //     currentMonthInfo = monthInfo[month];
-        // }
-        // console.log("cur: ", currentMonthInfo);
-
-
-        // var ld = currentMonthInfo.jd + day - 1;
         return SolarDate.fromJd(this.jd);
     }
 
     get() {
         return {
             ...super.get(),
-            year_name: this.getYearCanChi()
+            year_name: this.getYearName()
         }
     }
 }
