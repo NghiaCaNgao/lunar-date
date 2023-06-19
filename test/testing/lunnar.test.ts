@@ -181,7 +181,7 @@ describe("Test cases: `LunarDate`", () => {
 
         expect(al.get()).toEqual({
             "day": 2, "month": 5, "year": 2023,
-            "name": "lunar_calendar", "julian": 2460115,
+            "name": "lunar_calendar", "julian": 2460115, "leap_month": false,
             "leap_year": true, "year_name": "Quý Mão"
         })
     })
