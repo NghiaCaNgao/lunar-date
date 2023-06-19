@@ -1,12 +1,9 @@
-import { LunarDate, SolarDate } from "../../dist/bundle.js";
+import { SolarDate, LunarDate } from "../../bin/dist/index.mjs";
 
-const solarDate = new SolarDate(new Date());
-const lunarDate = LunarDate.fromSolarDate(solarDate);
-const solarDate_2 = lunarDate.toSolarDate();
+const solar_date = new SolarDate(new Date());
+console.log(solar_date);
+console.log(solar_date.toLunarDate());
 
-console.log(solarDate.get());
-console.log(lunarDate.get());
-console.log(solarDate_2.get());
-console.log(lunarDate.getYearInfo());
-
-// Remove type: "modules" from package.json and module: "Common" in tsconfig.json
+const lunar_date = new LunarDate({day: 10, month:5, year:2023});
+lunar_date.init()
+console.log(lunar_date.toSolarDate());

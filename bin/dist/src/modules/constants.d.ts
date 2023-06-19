@@ -1,0 +1,15 @@
+export declare const C13: number[];
+export declare const C14: number[];
+export declare const C15: number[];
+export declare const C16: number[];
+export declare const C17: number[];
+export declare const C18: number[];
+export declare const C19: number[];
+export declare const C20: number[];
+export declare const C21: number[];
+export declare const C22: number[];
+export declare const CAN: string[];
+export declare const CHI: string[];
+export declare const DAY: string[];
+export declare const LUCKY_HOURS: string[];
+export declare const SOLAR_TERMS: string[];
