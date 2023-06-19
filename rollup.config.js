@@ -32,7 +32,8 @@ export default [
             {
                 file: `${root_dir}/index.min.js`,
                 format: 'cjs',
-                sourcemap: !production
+                sourcemap: !production,
+                name: "_calendar"
             },
             {
                 file: `${root_dir}/index.min.mjs`,
