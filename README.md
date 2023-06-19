@@ -19,7 +19,22 @@ Remake từ <b><a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrul
   - [CDN](#cdn)
 - [Examples](#examples)
 - [API](#api)
+  - [Interfaces](#interfaces)
+    - [ICalendarDate](#icalendardate)
+    - [ISolarDate](#isolardate)
+    - [ILunarDate](#ilunardate)
+    - [ILuckyHour](#iluckyhour)
   - [SolarDate](#solardate)
+    - [Solar constructor 1](#solar-constructor-1)
+    - [Solar constructor 2](#solar-constructor-2)
+    - [SolarDate.FIRST_DAY](#solardatefirst_day)
+    - [SolarDate.LAST_DAY](#solardatelast_day)
+    - [SolarDate.fromJd()](#solardatefromjd)
+    - [SolarDate.jdn()](#solardatejdn)
+    - [solar.toDate()](#solartodate)
+    - [solar.toLunarDate()](#solartolunardate)
+    - [solar.setDate()](#solarsetdate)
+    - [solar.get()](#solarget)
   - [LunarDate](#lunardate)
 
 ## Features
@@ -79,6 +94,10 @@ Sử dụng `ES Module` với Typescript. JavaScript tương tự.
 
 > **Note** Nếu sử dụng `ts-node` thì cần chạy `npx ts-node --esm <filename>`
 
+Đoạn lệnh sau chuyển từ lịch dương sang lịch âm (trên) và âm sang dương (dưới).
+
+> **Note** Khi khởi tạo instance LunarDate thì luôn phải gọi hàm `init()`
+
 ```typescript
 import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
 
@@ -87,7 +106,7 @@ console.log(solar_date);
 console.log(solar_date.toLunarDate());
 
 const lunar_date = new LunarDate({ day: 10, month: 5, year: 2023 });
-lunar_date.init(); // initialize lunar_date before using 
+lunar_date.init(); // initialize lunar_date before using
 console.log(lunar_date.toSolarDate());
 
 // SolarDate {
@@ -135,7 +154,7 @@ Nếu sử dụng `UMD`
 ```html
 <script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@1a7fb3b/dist/index.umd.js"></script>
 <script>
-  var lunar_date = new window.calendar.LunarDate({
+  var lunar_date = new window._calendar.LunarDate({
     day: 1,
     month: 1,
     year: 2020,
@@ -157,41 +176,11 @@ Nếu sử dụng `UMD`
 
 ## API
 
-### SolarDate
+### Interfaces
 
-## Chuyển đổi từ dương sang âm
+#### `ICalendarDate`
 
-```javascript
-import { LunarDate, SolarDate } from "../../dist/bundle.js";
-
-const solarDate = new SolarDate(new Date());
-const lunarDate = LunarDate.fromSolarDate(solarDate);
-
-console.log(solarDate.get());
-console.log(lunarDate.get());
-
-// { day: 21, month: 3, year: 2023, leap: false, julian: 2460025 }
-// {day: 1, month: 3, year: 2023, leap: false, julian: 2460025, name: 'Quý Mão'}
-```
-
-## Chuyển từ lịch âm sang dương
-
-```javascript
-import { LunarDate, SolarDate } from "../../dist/bundle.js";
-
-const al = new LunarDate({ day: 10, month: 3, year: 2023 });
-const dl = al.toSolarDate().get();
-
-// { day: 30, month: 3, year: 2023, leap: false, julian: 2460034 }
-```
-
-# API
-
-## Interface
-
-### ICalendarDate
-
-Input option của Calendar Object
+Input của **`Calendar`** (abstract class [**`LunarDate`**](#lunardate) và [**`SolarDate`**](#solardate))
 
 ```ts
 export interface ICalendar {
@@ -201,41 +190,44 @@ export interface ICalendar {
 }
 ```
 
-### ISolarDate
+#### `ISolarDate`
 
-Input option cho Solar Object. Kế thừa từ [ICalendar](###ICalendar)
+Input của [**`SolarDate`**](#solardate). Kế thừa từ [**`ICalendarDate`**](#icalendardate)
 
 ```ts
-interface ISolarDate extends ICalendar
+interface ISolarDate extends ICalendar {}
 ```
 
-### ILunarDate
+#### `ILunarDate`
 
-Input option cho LunarDate. Kế thừa từ [ICalendar](###ICalendar)
+Input của [**`LunarDate`**](#lunardate). Kế thừa từ [**`ICalendarDate`**](#icalendardate)
 
 ```ts
-interface ILunarDate extends ICalendar {
-  leap?: boolean;
+interface ILunarDate extends ICalendarDate {
   jd?: number;
+  leap_month?: boolean;
+  leap_year?: boolean;
 }
 ```
 
-### IZodiacHour
+#### `ILuckyHour`
 
 Cung hoàng đạo
 
 ```ts
-interface IZodiacHour {
+interface ILuckyHour {
   name: string;
   time: number[];
 }
 ```
 
-## Solar Class
+### SolarDate
 
-### Solar constructor 1
+#### Solar constructor 1
 
-Tạo thực thể Solar Calendar từ [`ISolarDate`](###ISolarDate). Lưu ý: Nếu nhập sai ngày tháng thì đối thì sẽ báo lỗi `Invalid date`. Chi tiết về ngày hợp lệ xem [tại đây](https://github.com/NghiaCaNgao/lunarDate/wiki/Valid-dae)
+Tạo thực thể [**`SolarDate`**](#solardate) từ [**`ISolarDate`**](#isolardate).
+
+> **Note** Nếu nhập sai ngày tháng thì sẽ báo lỗi `Invalid date`. Chi tiết về ngày hợp lệ xem [tại đây](https://github.com/NghiaCaNgao/lunarDate/wiki/Valid-dae)
 
 ```ts
 public constructor(date: ISolarDate);
@@ -244,12 +236,16 @@ public constructor(date: ISolarDate);
 **Ví dụ:**
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 new SolarDate({ day: 1, month: 1, year: 2023 });
 ```
 
-### Solar constructor 2
+#### Solar constructor 2
 
-Tạo thực thể Solar Calendar từ Date object. Lưu ý: Nếu nhập sai ngày tháng thì đối tượng Date sẽ tự sửa lại. Nếu ngày nhập vào nằm trong khoảng từ **05-14/10/1582** thì sẽ báo lỗi `Invalid date`. Chi tiết về ngày hợp lệ xem [tại đây](https://github.com/NghiaCaNgao/lunarDate/wiki/Valid-dae)
+Tạo thực thể [**`SolarDate`**](#solardate) từ `Date` object.
+
+> **Note** Nếu nhập sai ngày tháng thì đối tượng `Date` sẽ tự sửa lại. Nếu ngày nhập vào nằm trong khoảng từ **05-14/10/1582** thì sẽ báo lỗi `Invalid date`. Chi tiết về ngày hợp lệ xem [tại đây](https://github.com/NghiaCaNgao/lunarDate/wiki/Valid-dae)
 
 ```ts
 public constructor(date: Date);
@@ -258,12 +254,30 @@ public constructor(date: Date);
 **Ví dụ:**
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 new SolarDate(new Date());
 ```
 
-### SolarDate.fromJd()
+#### `SolarDate.FIRST_DAY`
 
-Trả về một thực thể Solar Calendar từ ngày Julian.
+Ngày Julian tương ứng ngày đầu tiên trong giới hạn tính toán `1200-1-31`
+
+```ts
+public static readonly FIRST_DAY: number = SolarDate.jdn(new Date(1200, 0, 31)); //1200-1-31
+```
+
+#### `SolarDate.LAST_DAY`
+
+Ngày Julian tương ứng ngày cuối cùng trong giới hạn tính toán `2199-12-31`
+
+```ts
+public static readonly LAST_DAY: number = SolarDate.jdn(new Date(2199, 11, 31)); //2199-12-31
+```
+
+#### `SolarDate.fromJd()`
+
+Trả về một thực thể [**`SolarDate`**](#solardate) từ ngày Julian.
 
 ```ts
 static fromJd(jd: number): SolarDate
@@ -272,14 +286,34 @@ static fromJd(jd: number): SolarDate
 **Ví dụ:**
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 console.log(SolarDate.fromJd(2460035));
 
 // SolarDate { day: 31, month: 3, year: 2023, jd: 2460035, leap: false }
 ```
 
-### solar.toDate()
+#### `SolarDate.jdn()`
 
-Chuyển thực thể Solar Calendar về dạng Date
+Trả về ngày Julian date tương ứng với [**`ICalendarDate`**](#icalendardate) hoặc `Date`
+Ref: https://ssd.jpl.nasa.gov/tools/jdc/#/jd
+
+```ts
+static jdn(date: ICalendarDate | Date): number
+```
+
+**Ví dụ:**
+
+```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
+console.log(SolarDate.jdn(new Date())); // 2460115
+console.log(SolarDate.jdn({ day: 19, month: 6, year: 2023 })); // 2460115
+```
+
+#### `solar.toDate()`
+
+Chuyển thực thể [**`SolarDate`**](#solardate) về dạng **`Date`**
 
 ```ts
 toDate(): Date
@@ -288,28 +322,108 @@ toDate(): Date
 **Ví dụ:**
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 const solar = new SolarDate(new Date());
 console.log(solar.toDate());
 
-// 2023-03-30T17:00:00.000Z
+// 2023-06-18T17:00:00.000Z
 ```
 
-### solar.get()
+#### `solar.toLunarDate()`
 
-Lấy thông tin của đối tượng solar
+Chuyển từ thực thể [**`SolarDate`**](#solardate) sang thực thể [**`LunarDate`**](#lunardate)
 
 ```ts
-get(): ISolarDate;
+toLunarDate(): LunarDate
+```
+
+**Ví dụ:**
+
+```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
+var solar = new SolarDate(new Date());
+var lunar = solar.toLunarDate();
+
+console.log(lunar);
+
+// LunarDate {
+//   day: 2,
+//   month: 5,
+//   year: 2023,
+//   name: 'lunar_calendar',
+//   jd: 2460115,
+//   leap_year: true,
+//   leap_month: false
+// }
+```
+
+#### `solar.setDate()`
+
+Thay đổi thời gian của thực thể [**`SolarDate`**](#solardate)
+
+```ts
+setDate(date: ICalendarDate | Date): void
+```
+
+**Ví dụ:**
+
+```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
+var solar = new SolarDate(new Date()); // 2023-06-19
+
+solar.setDate(new Date(2023, 1, 1));
+console.log(solar);
+
+// SolarDate {
+//     day: 1,
+//     month: 2,
+//     year: 2023,
+//     name: 'solar_calendar',
+//     jd: 2459977,
+//     leap_year: false
+// }
+
+solar.setDate({ day: 5, month: 5, year: 2015 });
+console.log(solar);
+
+// SolarDate {
+//     day: 5,
+//     month: 5,
+//     year: 2015,
+//     name: 'solar_calendar',
+//     jd: 2457148,
+//     leap_year: false
+// }
+```
+
+#### `solar.get()`
+
+Lấy thông tin của thực thể [**`SolarDate`**](#solardate)
+
+```ts
+get();
 ```
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 const dl = new SolarDate(new Date());
 console.log(dl.get());
 
-// { day: 31, month: 3, year: 2023, leap_year: false, julian: 2460035 }
+// {
+//   name: 'solar_calendar',
+//   day: 19,
+//   month: 6,
+//   year: 2023,
+//   leap_year: false,
+//   julian: 2460115
+// }
 ```
 
-## Lunar class
+### LunarDate
 
 ### Constructor 1
 

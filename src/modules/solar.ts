@@ -157,7 +157,7 @@ export default class SolarDate extends Calendar {
     /**
      * Convert to Lunar date
      */
-    toLunarDate() {
+    toLunarDate(): LunarDate {
         return LunarDate.fromSolarDate(this);
     }
 
