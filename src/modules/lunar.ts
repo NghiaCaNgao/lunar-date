@@ -328,18 +328,18 @@ export default class LunarDate extends Calendar {
         return zodiacHours;
     }
 
-    setDate(date: ILunarDate): void {
-        //TODO: Check if date is valid or not
-        this.set(date);
-        this.init(true);
-    }
-
     /**
      * Convert to Solar Date.
      * @returns Solar Date
      */
     toSolarDate(): SolarDate {
         return SolarDate.fromJd(this.jd);
+    }
+
+    setDate(date: ILunarDate): void {
+        //TODO: Check if date is valid or not
+        this.set(date);
+        this.init(true);
     }
 
     /**
@@ -349,7 +349,8 @@ export default class LunarDate extends Calendar {
     get() {
         return {
             ...super.get(),
-            year_name: this.getYearName()
+            year_name: this.getYearName(),
+            leap_month: this.leap_month
         }
     }
 }

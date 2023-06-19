@@ -407,6 +407,8 @@ Lấy thông tin của thực thể [**`SolarDate`**](#solardate)
 get();
 ```
 
+**Ví dụ:**
+
 ```ts
 import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
 
@@ -425,21 +427,38 @@ console.log(dl.get());
 
 ### LunarDate
 
-### Constructor 1
+#### Lunar constructor
+
+Tạo thực thể [**`LunarDate`**](#lunardate) từ [**`ILunarDate`**](#ilunardate)
+> **Warn** Hàm này chưa chuẩn hóa dữ liệu vào
+> **Note** Khi khởi tạo cần điền đầy đủ `day`, `month`, `year`. Nếu không điền các thông tin khác (`leap_year`, ...) thì mặc định là `undefined`. Sau khi khởi tạo có thể sử dụng hàm [**`lunar.init()`**](#lunarinit) để tự động điền các thông tin còn thiếu. Nếu các thông tin (`leap_year`, `jd`,...) là `undefined` thì sẽ không thể sử dụng được các hàm khác trong thực thể.
 
 ```ts
 constructor(date: ILunarDate)
 ```
 
-- Ví dụ:
+**Ví dụ:**
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 const al = new LunarDate({ day: 1, month: 1, year: 2023 });
+console.log(al);
+
+// LunarDate {
+//   day: 1,
+//   month: 1,
+//   year: 2023,
+//   name: 'lunar_calendar',
+//   jd: undefined,
+//   leap_year: undefined,
+//   leap_month: undefined
+// }
 ```
 
-### SolarDate.fromSolarDate()
+#### `SolarDate.fromSolarDate()`
 
-Chuyển từ dương lịch sang âm lịch
+Chuyển từ [**`SolarDate`**](#solardate) sang [**`LunarDate`**](#lunardate).
 
 ```ts
 static fromSolarDate(date: SolarDate): LunarDate
@@ -448,39 +467,59 @@ static fromSolarDate(date: SolarDate): LunarDate
 **Ví dụ:**
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 const dl = new SolarDate(new Date());
 console.log(LunarDate.fromSolarDate(dl));
 
-// LunarDate2 { day: 10, month: 2, year: 2023, leap: true, jd: 2460035 }
+// LunarDate {
+//   day: 2,
+//   month: 5,
+//   year: 2023,
+//   name: 'lunar_calendar',
+//   jd: 2460115,
+//   leap_year: true,
+//   leap_month: false
+// }
 ```
 
-### init()
+#### `lunar.init()`
 
-Khởi tạo giá trị cho thực thể
+Khởi tạo giá trị cho thực thể. Nếu `force_change = false`, chỉ áp dụng thay đổi giá trị phụ (`leap-year`, `jd`, ...) của thực thể khi chúng khác `undefined`. Nếu `force_change = true`, luôn thay đổi giá trị phụ.
 
 ```ts
-init();
+init(force_change: boolean = false)
 ```
 
 **Ví dụ:**
 
 ```ts
-let lunar1 = new LunarDate({ day: 2, month: 5, year: 2023 });
-lunar1.init();
-console.log(lunar1);
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
 
-// {"name": "lunar_calendar", "day": 2, "month": 5, "year": 2023, "jd": 2460115, "leap_month": false, "leap_year": true}
+let lunar = new LunarDate({ day: 2, month: 5, year: 2023 });
+lunar.init();
+console.log(lunar);
+
+// LunarDate {
+//   day: 2,
+//   month: 5,
+//   year: 2023,
+//   name: 'lunar_calendar',
+//   jd: 2460115,
+//   leap_year: true,
+//   leap_month: false
+// }
 ```
 
-### lunar.get()
+#### `lunar.get()`
 
-- Lấy thông tin của đối tượng lunar
+Lấy thông tin của thực thể [**`LunarDate`**](#lunardate).
 
 ```ts
 get();
 ```
 
-- Ví dụ
+**Ví dụ:**
 
 ```ts
 const dl = new SolarDate(new Date());
@@ -488,134 +527,94 @@ const al = LunarDate.fromSolarDate(dl);
 console.log(al.get());
 
 // {
-//   day: 10,
-//   month: 2,
+//   name: 'lunar_calendar',
+//   day: 2,
+//   month: 5,
 //   year: 2023,
-//   leap: true,
-//   julian: 2460035,
-//   name: 'Quý Mão'
+//   leap_year: true,
+//   julian: 2460115,
+//   year_name: 'Quý Mão',
+//   leap_month: false
 // }
 ```
 
-### lunar.getYearCanChi()
+#### `lunar.getYearName()`
 
-- Lấy can chi của năm
-
-```ts
-getYearCanChi(): string
-```
-
-- Ví dụ:
+Lấy tên của năm theo can chi.
 
 ```ts
-const dl = new SolarDate(new Date());
-const al = LunarDate.fromSolarDate(dl);
-console.log(al.getYearCanChi());
-
-// Quý Mão
+getYearName(): string
 ```
 
-### lunar.getMonthCanChi()
+#### `lunar.getMonthName()`
 
-- Lấy Can của tháng
+Lấy tên của tháng theo can chi.
 
 ```ts
-getMonthCanChi(): string
+getMonthName(): string
 ```
 
-- Ví dụ
+#### `lunar.getDayName()`
+
+Lấy tên của ngày theo can chi.
 
 ```ts
-const dl = new SolarDate(new Date());
-const al = LunarDate.fromSolarDate(dl);
-console.log(al.getMonthCanChi());
-
-// Ất Mão (nhuận)
+getDayName(): string
 ```
 
-### lunar.getDayCanChi()
+#### `lunar.getHourName()`
 
-- Lấy Can của ngày
+Lấy tên của giờ theo can chi.
 
 ```ts
-getDayCanChi(): string
+getHourName(): string
 ```
 
-- Ví dụ
+#### `lunar.getDayOfWeek()`
 
-```ts
-const dl = new SolarDate(new Date());
-const al = LunarDate.fromSolarDate(dl);
-console.log(al.getDayCanChi());
-
-// Mậu Tý
-```
-
-### lunar.getGioCanChi()
-
-- Lấy Can của giơ
-
-```ts
-getGioCanChi(): string
-```
-
-- Ví dụ
-
-```ts
-const dl = new SolarDate(new Date());
-const al = LunarDate.fromSolarDate(dl);
-console.log(al.getGioCanChi());
-
-// Nhâm Tý
-```
-
-### lunar.getDayOfWeek()
-
-- Thứ trong tuần
+Lấy tên thứ trong tuần.
 
 ```ts
 getDayOfWeek(): string
 ```
 
-- Ví dụ
+#### `lunar.getSolarTerm()`
 
-```ts
-const dl = new SolarDate(new Date());
-const al = LunarDate.fromSolarDate(dl);
-console.log(al.getDayOfWeek());
-
-// Thứ sáu
-```
-
-### lunar.getTietKhi()
-
-- Thứ trong tuần
+Lấy tên tiết khí
 
 ```ts
 getTietKhi(): string
 ```
 
-- Ví dụ
+**Ví dụ:**
 
 ```ts
-const dl = new SolarDate(new Date());
-const al = LunarDate.fromSolarDate(dl);
-console.log(al.getTietKhi());
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
 
-// Xuân phân
+let lunar = new LunarDate({ day: 2, month: 5, year: 2023 });
+lunar.init();
+
+console.log(lunar.getYearName()); // Quý Mão
+console.log(lunar.getMonthName()); // Mậu Ngọ
+console.log(lunar.getDayName()); // Mậu Thân
+console.log(lunar.getHourName()); // Nhâm Tý
+console.log(lunar.getSolarTerm()); // Mang chủng
+console.log(lunar.getDayOfWeek()); // Thứ hai
 ```
 
-### lunar.getZodiacHour()
+#### `lunar.getLuckyHours()`
 
-- Lấy giờ hoàng đạo
+Lấy giờ hoàng đạo.
 
 ```ts
-getZodiacHour(): Array
+getLuckyHours(): Array<ILuckyHour>
 ```
 
-- Ví dụ
+**Ví dụ:**
 
 ```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
 const dl = new SolarDate(new Date());
 const al = LunarDate.fromSolarDate(dl);
 console.log(al.getZodiacHour());
@@ -623,25 +622,68 @@ console.log(al.getZodiacHour());
 // [
 //   { name: 'Tý', time: [ 23, 1 ] },
 //   { name: 'Sửu', time: [ 1, 3 ] },
-//   { name: 'Mão', time: [ 5, 7 ] },
-//   { name: 'Ngọ', time: [ 11, 13 ] },
-//   { name: 'Thân', time: [ 15, 17 ] },
-//   { name: 'Dậu', time: [ 17, 19 ] }
+//   { name: 'Thìn', time: [ 7, 9 ] },
+//   { name: 'Tỵ', time: [ 9, 11 ] },
+//   { name: 'Mùi', time: [ 13, 15 ] },
+//   { name: 'Tuất', time: [ 19, 21 ] }
 // ]
 ```
 
-### lunar.toSolarDate()
+#### `lunar.toSolarDate()`
 
-- Lấy giờ hoàng đạo
+Chuyển từ [**`LunarDate`**](#lunardate) sang [**`SolarDate`**](#solardate).
 
 ```ts
 toSolarDate(): SolarDate
 ```
 
-- Ví dụ
+**Ví dụ:**
 
 ```ts
-const dl = new SolarDate(new Date());
-const al = LunarDate.fromSolarDate(dl);
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
+const al = new LunarDate({ day: 2, month: 5, year: 2023 });
+al.init();
+
 console.log(al.toSolarDate());
+
+// SolarDate {
+//   day: 19,
+//   month: 6,
+//   year: 2023,
+//   name: 'solar_calendar',
+//   jd: 2460115,
+//   leap_year: false
+// }
+```
+
+#### `lunar.setDate()`
+
+Thay đổi thời gian của thực thể [**`LunarDate`**](#lunardate)
+
+> **Warn** Hàm này chưa chuẩn hóa dữ liệu vào
+
+```ts
+setDate(date: ILunarDate): void
+```
+
+**Ví dụ:**
+
+```ts
+import { SolarDate, LunarDate } from "@nghiavuive/lunar_date_vi";
+
+const al = new LunarDate({ day: 2, month: 5, year: 2023 });
+al.init();
+al.setDate({ day: 2, month: 10, year: 2023 });
+
+console.log(al.toSolarDate());
+
+// SolarDate {
+//   day: 14,
+//   month: 11,
+//   year: 2023,
+//   name: 'solar_calendar',
+//   jd: 2460263,
+//   leap_year: false
+// }
 ```

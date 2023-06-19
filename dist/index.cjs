@@ -384,17 +384,18 @@ class LunarDate extends Calendar {
         }
         return zodiacHours;
     }
+    toSolarDate() {
+        return SolarDate.fromJd(this.jd);
+    }
     setDate(date) {
         this.set(date);
         this.init(true);
     }
-    toSolarDate() {
-        return SolarDate.fromJd(this.jd);
-    }
     get() {
         return {
             ...super.get(),
-            year_name: this.getYearName()
+            year_name: this.getYearName(),
+            leap_month: this.leap_month
         };
     }
 }
