@@ -21,8 +21,6 @@ export default class LunarDate extends Calendar {
         this.leap_month = date.leap_month;
         this.leap_year = date.leap_year;
         this.jd = date.jd;
-
-        //TODO: Có thể bỏ init nếu biến tất cả thành non-static
     }
 
     /**
@@ -171,7 +169,7 @@ export default class LunarDate extends Calendar {
      * @param lunar_months 
      * @returns Exactly the lunar date
      */
-    private static findLunarDate(jd: number, lunar_months: Array<LunarDate>) {
+    private static findLunarDate(jd: number, lunar_months: Array<LunarDate>): LunarDate {
         // TODO: find test case
         if (lunar_months[0].jd > jd) {
             throw new Error("Out of calculation");
