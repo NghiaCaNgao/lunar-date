@@ -15,29 +15,18 @@ export default [
         output: [
             {
                 file: `${root_dir}/index.js`,
-                format: 'cjs',
+                format: 'cjs', // cjs - for Node.js
                 sourcemap: !production
+            },
+            {
+                file: `${root_dir}/index.umd.js`,
+                format: 'umd', // umd - for Browser + Node.js
+                sourcemap: !production,
+                name: "calendar"
             },
             {
                 file: `${root_dir}/index.mjs`,
-                format: 'es',
-                sourcemap: !production
-            },
-        ]
-    },
-    {
-        input: `src/index.ts`,
-        plugins: [typescript(), esbuild(), terser()],
-        output: [
-            {
-                file: `${root_dir}/index.min.js`,
-                format: 'cjs',
-                sourcemap: !production,
-                name: "_calendar"
-            },
-            {
-                file: `${root_dir}/index.min.mjs`,
-                format: 'es',
+                format: 'es', // ESM
                 sourcemap: !production
             },
         ]
