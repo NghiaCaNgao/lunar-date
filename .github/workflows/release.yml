@@ -1,6 +1,11 @@
 name: Release LunarDate
 run-name: ${{ github.actor }} releases LunarDate
 on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       release_confirm:
@@ -9,7 +14,7 @@ on:
         default: false
 jobs:
   release-modules:
-    if: github.event.inputs.release_confirm
+    if: github.event.inputs.release_confirm && github.event.pull_request.merged
     permissions: { contents: write }
     runs-on: ubuntu-latest
     steps:
