@@ -6,6 +6,6 @@
 ### Fixed
 - function convert from `LunarDate` to `SolarDate`
 ### Removed
-- 
+- Rename function
 ### Changed
 - Refactor code
