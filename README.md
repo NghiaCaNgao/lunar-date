@@ -85,7 +85,7 @@ Sử dụng qua jsDelivr
 <!-- FIXME: Sửa lại theo tag -->
 
 ```bash
-<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@1a7fb3b/dist/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@v1.0.11/dist/index.umd.js"></script>
 ```
 
 ## Examples
@@ -430,7 +430,8 @@ console.log(dl.get());
 #### Lunar constructor
 
 Tạo thực thể [**`LunarDate`**](#lunardate) từ [**`ILunarDate`**](#ilunardate)
-> **Warn** Hàm này chưa chuẩn hóa dữ liệu vào
+> **Note** Hàm này chưa chuẩn hóa dữ liệu vào
+
 > **Note** Khi khởi tạo cần điền đầy đủ `day`, `month`, `year`. Nếu không điền các thông tin khác (`leap_year`, ...) thì mặc định là `undefined`. Sau khi khởi tạo có thể sử dụng hàm [**`lunar.init()`**](#lunarinit) để tự động điền các thông tin còn thiếu. Nếu các thông tin (`leap_year`, `jd`,...) là `undefined` thì sẽ không thể sử dụng được các hàm khác trong thực thể.
 
 ```ts
@@ -661,7 +662,7 @@ console.log(al.toSolarDate());
 
 Thay đổi thời gian của thực thể [**`LunarDate`**](#lunardate)
 
-> **Warn** Hàm này chưa chuẩn hóa dữ liệu vào
+> **Note** Hàm này chưa chuẩn hóa dữ liệu vào
 
 ```ts
 setDate(date: ILunarDate): void

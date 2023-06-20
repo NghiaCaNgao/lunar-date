@@ -1,0 +1,28 @@
+name: Release LunarDate
+run-name: ${{ github.actor }} releases LunarDate
+on:
+  workflow_dispatch:
+    inputs:
+      release_confirm:
+        type: boolean
+        description: Confirm release
+        default: false
+jobs:
+  release-modules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
