@@ -1,0 +1,55 @@
+name: Publish LunarDate
+run-name: ${{ github.actor }} publishes LunarDate
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      publish_confirm:
+        type: boolean
+        description: Confirm publishing
+        default: false
+jobs:
+  release-modules:
+    if: github.event.inputs.publish_confirm || github.event.pull_request.merged
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@"
+      - run: npm ci
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main #return package version in current-version output value
+      - name: Extract release notes
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+        
+        ############# TAG RELEASE ##############
+      - name: "Push tag v${{ steps.package-version.outputs.current-version }}"
+        uses: rickstaa/action-create-tag@v1 # create tag
+        id: tag_version
+        with:
+          tag: "v${{ steps.package-version.outputs.current-version }}"
+
+        ############# GITHUB RELEASE ###########
+      - name: "Create a GitHub release v${{ steps.package-version.outputs.current-version }}"
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ steps.package-version.outputs.current-version }}"
+          name: "Release v${{ steps.package-version.outputs.current-version }}"
+          body: |
+            ${{ steps.extract-release-notes.outputs.release_notes }}
+        ############# NPM RELEASE ##############
+      - name: Publish the release to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
