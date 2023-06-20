@@ -15,7 +15,8 @@ on:
 jobs:
   release-modules:
     if: github.event.inputs.release_confirm || github.event.pull_request.merged
-    permissions: { contents: write }
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
