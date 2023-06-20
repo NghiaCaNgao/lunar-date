@@ -9,6 +9,9 @@ on:
         default: false
 jobs:
   release-modules:
+    permissions: {
+        contents: write
+    }
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,6 +26,3 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: true
           title: "Development Build"
-          files: |
-            README.md
-            *.jar
