@@ -13,10 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+      - name: Log
+        run: |
+          echo ${{github.event.inputs.release_confirm}}
       - name: Create release
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: "${{ secrets.RELEASE_TOKEN}}"
           automatic_release_tag: "latest"
           prerelease: true
           title: "Development Build"
