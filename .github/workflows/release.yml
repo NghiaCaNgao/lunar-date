@@ -10,7 +10,7 @@ on:
     inputs:
       release_confirm:
         type: boolean
-        description: Confirm release
+        description: Confirm releasing
         default: false
 jobs:
   release-modules:
