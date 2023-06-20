@@ -4,7 +4,7 @@ on:
   pull_request:
     types:
       - closed
-    branches:
+    branches: #target branch
       - main
   workflow_dispatch:
     inputs:
@@ -19,7 +19,7 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Log
+      - name: Log # source branch is head.labels.
         run: |
           echo ${{github.event.pull_request.head.label}}
           echo ${{github.event.pull_request.labels.*.name}}
