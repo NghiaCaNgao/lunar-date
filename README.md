@@ -36,7 +36,20 @@ Remake từ <b><a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrul
     - [solar.setDate()](#solarsetdate)
     - [solar.get()](#solarget)
   - [LunarDate](#lunardate)
-
+    - [Lunar constructor](#lunar-constructor)
+    - [SolarDate.fromSolarDate()](#solardatefromsolardate)
+    - [lunar.init()](#lunarinit)
+    - [lunar.get()](#lunarget)
+    - [lunar.getYearName()](#lunargetyearname)
+    - [lunar.getMonthName()](#lunargetmonthname)
+    - [lunar.getDayName()](#lunargetdayname)
+    - [lunar.getHourName()](#lunargethourname)
+    - [lunar.getDayOfWeek()](#lunargetdayofweek)
+    - [lunar.getSolarTerm()](#lunargetsolarterm)
+    - [lunar.getLuckyHours()](#lunargetluckyhours)
+    - [lunar.toSolarDate()](#lunartosolardate)
+    - [lunar.setDate()](#lunarsetdate)
+    - [lunar.setDate()](#lunarsetdate)
 ## Features
 
 - Chuyển đổi lịch dương sang lịch âm (của Việt Nam) và ngược lại.
