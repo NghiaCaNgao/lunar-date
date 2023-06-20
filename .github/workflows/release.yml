@@ -14,7 +14,7 @@ on:
         default: false
 jobs:
   release-modules:
-    if: github.event.inputs.release_confirm && github.event.pull_request.merged
+    if: github.event.inputs.release_confirm || github.event.pull_request.merged
     permissions: { contents: write }
     runs-on: ubuntu-latest
     steps:
