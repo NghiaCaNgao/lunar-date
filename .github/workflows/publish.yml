@@ -14,13 +14,16 @@ on:
         default: false
 jobs:
   release-modules:
-    if: github.event.inputs.publish_confirm || github.event.pull_request.merged
+    if: github.event.inputs.publish_confirm || (github.event.pull_request.merged && github.event.pull_request.head.label == 'lunar:release')
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          registry-url: "https://registry.npmjs.org"
       - name: git config
         run: |
           git config user.name "${GITHUB_ACTOR}"
@@ -32,7 +35,7 @@ jobs:
       - name: Extract release notes
         id: extract-release-notes
         uses: ffurrer2/extract-release-notes@v1
-        
+
         ############# TAG RELEASE ##############
       - name: "Push tag v${{ steps.package-version.outputs.current-version }}"
         uses: rickstaa/action-create-tag@v1 # create tag
