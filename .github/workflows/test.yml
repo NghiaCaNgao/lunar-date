@@ -1,6 +1,6 @@
 name: Test LunarDate
 run-name: ${{ github.actor }} tests LunarDate
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   test-modules:
     runs-on: ubuntu-latest
