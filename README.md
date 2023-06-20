@@ -85,7 +85,7 @@ Sử dụng qua jsDelivr
 <!-- FIXME: Sửa lại theo tag -->
 
 ```bash
-<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@1a7fb3b/dist/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@v1.0.11/dist/index.umd.js"></script>
 ```
 
 ## Examples
