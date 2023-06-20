@@ -14,11 +14,15 @@ on:
         default: false
 jobs:
   release-modules:
-    if: github.event.inputs.publish_confirm || (github.event.pull_request.merged && github.event.pull_request.head.label == 'LunarDate:release')
+    if: github.event.inputs.publish_confirm || (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'release'))
     permissions:
       contents: write
     runs-on: ubuntu-latest
     steps:
+      - name: Log
+        run: |
+          echo ${{github.event.pull_request.head.label}}
+          echo ${{github.event.pull_request.labels.*.name}}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
