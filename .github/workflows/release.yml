@@ -9,9 +9,8 @@ on:
         default: false
 jobs:
   release-modules:
-    permissions: {
-        contents: write
-    }
+    if: github.event.inputs.release_confirm
+    permissions: { contents: write }
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
