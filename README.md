@@ -96,10 +96,8 @@ const calendar = require("@nghiavuive/lunar_date_vi/dist/index.cjs");
 
 Sử dụng qua jsDelivr
 
-<!-- FIXME: Sửa lại theo tag -->
-
 ```bash
-<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@v1.0.11/dist/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@latest/dist/index.umd.js"></script>
 ```
 
 ## Examples
