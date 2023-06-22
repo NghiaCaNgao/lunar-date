@@ -1,22 +1,21 @@
 {
     "compilerOptions": {
-        "module": "ESNext",
-        "target": "esnext",
         "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "sourceMap": true,
-        "declaration": true,
+        "target": "esnext",
+        "module": "ESNext",
         "moduleResolution": "node",
-        "esModuleInterop": true,
         "resolveJsonModule": true,
-        "outDir": "./lib",
         "baseUrl": ".",
         "paths": {
             "@src/*": [
                 "src/modules/*"
             ]
-        }
+        },
+        "declaration": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "preserveConstEnums": true,
+        "esModuleInterop": true,
     },
     "ts-node": {
         "esm": true,
