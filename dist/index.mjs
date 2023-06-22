@@ -154,17 +154,21 @@ class SolarDate extends Calendar {
     return new SolarDate({ day, month, year });
   }
   static jdn(date) {
-    const day = date instanceof Date ? date.getDate() : date.day;
-    const month = date instanceof Date ? date.getMonth() + 1 : date.month;
-    const year = date instanceof Date ? date.getFullYear() : date.year;
-    const a = INT((14 - month) / 12);
-    const y = year + 4800 - a;
-    const m = month + 12 * a - 3;
-    var jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
-    if (jd < 2299161) {
-      jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
+    if (SolarDate.isValidDate(date)) {
+      const day = date instanceof Date ? date.getDate() : date.day;
+      const month = date instanceof Date ? date.getMonth() + 1 : date.month;
+      const year = date instanceof Date ? date.getFullYear() : date.year;
+      const a = INT((14 - month) / 12);
+      const y = year + 4800 - a;
+      const m = month + 12 * a - 3;
+      var jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+      if (jd < 2299161) {
+        jd = day + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
+      }
+      return jd;
+    } else {
+      throw new Error("Invalid date");
     }
-    return jd;
   }
   toDate() {
     const { day, month, year } = this;
@@ -199,23 +203,59 @@ class SolarDate extends Calendar {
 
 class LunarDate extends Calendar {
   leap_month;
+  length;
   constructor(date) {
     super(date, "lunar_calendar");
     this.leap_month = date.leap_month;
-    this.leap_year = date.leap_year;
-    this.jd = date.jd;
+  }
+  setExAttribute(date) {
+    this.leap_year = this.leap_year || date.leap_year;
+    this.jd = this.jd || date.jd;
+    this.length = this.length || date.length;
   }
   init(force_change = false) {
-    const recommendation = LunarDate.getRecommended({ day: this.day, month: this.month, year: this.year });
+    if (!LunarDate.isValidDate({ day: this.day, month: this.month, year: this.year }))
+      throw new Error("Invalid date");
+    const recommendation = LunarDate.getRecommended({
+      day: this.day,
+      month: this.month,
+      year: this.year,
+      leap_month: this.leap_month
+    });
     if (force_change) {
       this.leap_month = recommendation.leap_month;
       this.leap_year = recommendation.leap_year;
       this.jd = recommendation.jd;
+      this.length = recommendation.length;
     } else {
       this.leap_month = this.leap_month || recommendation.leap_month;
       this.leap_year = this.leap_year || recommendation.leap_year;
       this.jd = this.jd || recommendation.jd;
+      this.length = this.length || recommendation.length;
     }
+  }
+  static isValidDate(date) {
+    if (date.day <= 0 || date.day > 30)
+      return false;
+    if (date.month <= 0 || date.month > 12)
+      return false;
+    if (date.year === 1200) {
+      if (date.month === 1) {
+        if (date.day < 14) {
+          return false;
+        }
+      }
+    } else if (date.year < 1200)
+      return false;
+    if (date.year === 2199) {
+      if (date.month === 11) {
+        if (date.day > 14) {
+          return false;
+        }
+      }
+    } else if (date.year > 2199)
+      return false;
+    return true;
   }
   static getRecommended(date) {
     const year_code = LunarDate.getYearCode(date.year);
@@ -223,13 +263,19 @@ class LunarDate extends Calendar {
     const rcm = {
       jd: 0,
       leap_month: false,
-      leap_year: false
+      leap_year: false,
+      length: 0
     };
     for (let i = 0; i < lunar_months.length; i++) {
       if (lunar_months[i].month === date.month) {
-        rcm.jd = lunar_months[i].jd + date.day - 1;
-        rcm.leap_month = lunar_months[i].leap_month;
-        rcm.leap_year = lunar_months[i].leap_year;
+        let ref_months = date.leap_month && lunar_months[i + 1] != void 0 && lunar_months[i + 1].month === date.month ? lunar_months[i + 1] : lunar_months[i];
+        if (date.day > ref_months.length)
+          throw new Error("Invalid date");
+        rcm.jd = ref_months.jd + date.day - 1;
+        rcm.leap_month = ref_months.leap_month;
+        rcm.leap_year = ref_months.leap_year;
+        rcm.length = ref_months.length;
+        break;
       }
     }
     return {
@@ -281,20 +327,22 @@ class LunarDate extends Calendar {
     }
     for (let month = 1; month <= 12; month++) {
       const date = { day: 1, month, year };
-      lunar_months.push(new LunarDate({
-        ...date,
-        leap_month: false,
+      let normal_lunar = new LunarDate({ ...date, leap_month: false });
+      normal_lunar.setExAttribute({
         leap_year: leapMonth !== 0,
-        jd: currentJD
-      }));
+        jd: currentJD,
+        length: reg_month_lens[month - 1]
+      });
+      lunar_months.push(normal_lunar);
       currentJD += reg_month_lens[month - 1];
       if (leapMonth === month) {
-        lunar_months.push(new LunarDate({
-          ...date,
-          leap_month: true,
+        let leap_lunar = new LunarDate({ ...date, leap_month: true });
+        leap_lunar.setExAttribute({
           leap_year: leapMonth !== 0,
-          jd: currentJD
-        }));
+          jd: currentJD,
+          length: leapMonthLength
+        });
+        lunar_months.push(leap_lunar);
         currentJD += leapMonthLength;
       }
     }
@@ -309,14 +357,18 @@ class LunarDate extends Calendar {
       index--;
     }
     let offset = jd - lunar_months[index].jd;
-    return new LunarDate({
+    let lunar = new LunarDate({
       day: lunar_months[index].day + offset,
       month: lunar_months[index].month,
       year: lunar_months[index].year,
-      leap_month: lunar_months[index].leap_month,
-      leap_year: lunar_months[index].leap_year,
-      jd
+      leap_month: lunar_months[index].leap_month
     });
+    lunar.setExAttribute({
+      jd,
+      leap_year: lunar_months[index].leap_year,
+      length: lunar_months[index].length
+    });
+    return lunar;
   }
   static getSunLongitudeByJd(jd) {
     const T = (jd - 2451545) / 36525;
@@ -384,8 +436,22 @@ class LunarDate extends Calendar {
     return SolarDate.fromJd(this.jd);
   }
   setDate(date) {
-    this.set(date);
-    this.init(true);
+    let backupDate = {
+      day: this.day,
+      month: this.month,
+      year: this.year,
+      leap_month: this.leap_month
+    };
+    try {
+      if (!LunarDate.isValidDate(date))
+        throw new Error("Invalid date");
+      this.set(date);
+      this.leap_month = date.leap_month;
+      this.init(true);
+    } catch (error) {
+      this.setDate(backupDate);
+      throw new Error("Invalid date");
+    }
   }
   get() {
     return {

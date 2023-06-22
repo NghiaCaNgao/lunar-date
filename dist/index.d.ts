@@ -41,9 +41,7 @@ declare class SolarDate extends Calendar {
 }
 
 interface ILunarDate extends ICalendarDate {
-    jd?: number;
     leap_month?: boolean;
-    leap_year?: boolean;
 }
 interface ILuckyHour {
     name: string;
@@ -51,8 +49,11 @@ interface ILuckyHour {
 }
 declare class LunarDate extends Calendar {
     private leap_month?;
+    private length?;
     constructor(date: ILunarDate);
+    private setExAttribute;
     init(force_change?: boolean): void;
+    private static isValidDate;
     private static getRecommended;
     private static getYearCode;
     private static generateJdOfNewYear;

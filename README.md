@@ -50,6 +50,7 @@ Remake từ <b><a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrul
     - [lunar.toSolarDate()](#lunartosolardate)
     - [lunar.setDate()](#lunarsetdate)
     - [lunar.setDate()](#lunarsetdate)
+
 ## Features
 
 - Chuyển đổi lịch dương sang lịch âm (của Việt Nam) và ngược lại.
@@ -95,10 +96,8 @@ const calendar = require("@nghiavuive/lunar_date_vi/dist/index.cjs");
 
 Sử dụng qua jsDelivr
 
-<!-- FIXME: Sửa lại theo tag -->
-
 ```bash
-<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@v1.0.11/dist/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/NghiaCaNgao/lunarDate@latest/dist/index.umd.js"></script>
 ```
 
 ## Examples
@@ -443,7 +442,10 @@ console.log(dl.get());
 #### Lunar constructor
 
 Tạo thực thể [**`LunarDate`**](#lunardate) từ [**`ILunarDate`**](#ilunardate)
-> **Note** Hàm này chưa chuẩn hóa dữ liệu vào
+
+> **Note** Để nhập tháng nhuận, sử dụng thêm attr `leap_month = true`. Nếu sử dụng `leap_month = true` với tháng không thể nhuận, tư động chuyển về `leap_month = false`.
+
+> **Note** Nếu nhập sai ngày tháng sẽ trả về lỗi [**`Invalid date`**](https://github.com/NghiaCaNgao/LunarDate/wiki/Error-message)
 
 > **Note** Khi khởi tạo cần điền đầy đủ `day`, `month`, `year`. Nếu không điền các thông tin khác (`leap_year`, ...) thì mặc định là `undefined`. Sau khi khởi tạo có thể sử dụng hàm [**`lunar.init()`**](#lunarinit) để tự động điền các thông tin còn thiếu. Nếu các thông tin (`leap_year`, `jd`,...) là `undefined` thì sẽ không thể sử dụng được các hàm khác trong thực thể.
 
@@ -467,6 +469,19 @@ console.log(al);
 //   jd: undefined,
 //   leap_year: undefined,
 //   leap_month: undefined
+// }
+
+const al = new LunarDate({ day: 1, month: 2, year: 2023, leap_month: true });
+al.init();
+console.log(al.toSolarDate());
+
+// SolarDate {
+//   day: 22,
+//   month: 3,
+//   year: 2023,
+//   name: 'solar_calendar',
+//   jd: 2460026,
+//   leap_year: false
 // }
 ```
 

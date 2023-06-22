@@ -18,6 +18,13 @@
             ]
         }
     },
+    "ts-node": {
+        "esm": true,
+        "compilerOptions": {
+            "module": "CommonJS",
+            "esModuleInterop": true
+        }
+    },
     "include": [
         "./src/*.ts",
         "./src/modules/*.ts",

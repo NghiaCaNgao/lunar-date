@@ -3,41 +3,94 @@ import Calendar, { ICalendarDate, PI, INT } from "./calendar";
 import SolarDate from "./solar";
 
 export interface ILunarDate extends ICalendarDate {
-    jd?: number;
     leap_month?: boolean;
-    leap_year?: boolean;
 }
+interface ILunarDateEx extends ILunarDate {
+    jd?: number;
+    leap_year?: boolean;
+    length?: number;
+}
+
+interface ILunarDateLeap {
+    jd?: number
+    leap_year?: boolean;
+    length?: number;
+}
+
 interface ILuckyHour {
     name: string;
     time: number[];
 }
 export default class LunarDate extends Calendar {
     private leap_month?: boolean
+    private length?: number
 
     constructor(date: ILunarDate) {
-        // TODO: check if date is valid or not
         super(date, "lunar_calendar");
-
         this.leap_month = date.leap_month;
-        this.leap_year = date.leap_year;
-        this.jd = date.jd;
+    }
+
+    /**
+     * Set extra parameters (for private constructor).
+     * @param date 
+     */
+    private setExAttribute(date: ILunarDateLeap): void {
+        this.leap_year = this.leap_year || date.leap_year;
+        this.jd = this.jd || date.jd;
+        this.length = this.length || date.length;
     }
 
     /**
      * Initialize the instance.
      */
     init(force_change: boolean = false) {
+        if (!LunarDate.isValidDate({ day: this.day, month: this.month, year: this.year }))
+            throw new Error("Invalid date");
+
         const recommendation = LunarDate.getRecommended(
-            { day: this.day, month: this.month, year: this.year });
+            {
+                day: this.day, month: this.month, year: this.year,
+                leap_month: this.leap_month
+            });
+
         if (force_change) {
             this.leap_month = recommendation.leap_month;
             this.leap_year = recommendation.leap_year;
             this.jd = recommendation.jd;
+            this.length = recommendation.length;
         } else {
             this.leap_month = this.leap_month || recommendation.leap_month;
             this.leap_year = this.leap_year || recommendation.leap_year;
             this.jd = this.jd || recommendation.jd;
+            this.length = this.length || recommendation.length;
         }
+    }
+
+    /**
+     * 
+     * @returns Check if date is valid or not.
+     */
+    private static isValidDate(date: ICalendarDate): boolean {
+        if (date.day <= 0 || date.day > 30) return false;
+        if (date.month <= 0 || date.month > 12) return false;
+
+        if (date.year === 1200) {
+            if (date.month === 1) {
+                if (date.day < 14) {
+                    return false;
+                }
+            }
+        } else if (date.year < 1200) return false;
+
+        if (date.year === 2199) {
+            if (date.month === 11) {
+                if (date.day > 14) {
+                    return false;
+                }
+            }
+        } else if (date.year > 2199) return false;
+
+        return true
     }
 
     /**
@@ -45,28 +98,40 @@ export default class LunarDate extends Calendar {
      * @param date Lunar Date
      * @returns recommended info
      */
-    private static getRecommended(date: ICalendarDate): ILunarDate {
+    private static getRecommended(date: ILunarDate): ILunarDateEx {
         const year_code = LunarDate.getYearCode(date.year);
         const lunar_months = LunarDate.decodeLunarYear(date.year, year_code)
 
         const rcm = {
             jd: 0,
             leap_month: false,
-            leap_year: false
+            leap_year: false,
+            length: 0
         }
 
         for (let i = 0; i < lunar_months.length; i++) {
             if (lunar_months[i].month === date.month) {
-                rcm.jd = lunar_months[i].jd + date.day - 1;
-                rcm.leap_month = lunar_months[i].leap_month;
-                rcm.leap_year = lunar_months[i].leap_year;
+                let ref_months = (
+                    date.leap_month && lunar_months[i + 1] != undefined &&
+                    lunar_months[i + 1].month === date.month)
+                    ? lunar_months[i + 1]
+                    : lunar_months[i];
+
+                if (date.day > ref_months.length) throw new Error("Invalid date")
+
+                rcm.jd = ref_months.jd + date.day - 1;
+                rcm.leap_month = ref_months.leap_month;
+                rcm.leap_year = ref_months.leap_year;
+                rcm.length = ref_months.length
+
+                break;
             }
         }
 
         return {
             ...date,
             ...rcm
-        } as ILunarDate
+        } as ILunarDateEx
     }
 
     /**
@@ -140,22 +205,26 @@ export default class LunarDate extends Calendar {
         for (let month = 1; month <= 12; month++) {
             const date: ICalendarDate = { day: 1, month, year };
 
-            lunar_months.push(new LunarDate({
-                ...date,
-                leap_month: false,
+            let normal_lunar = new LunarDate({ ...date, leap_month: false })
+            normal_lunar.setExAttribute({
                 leap_year: leapMonth !== 0,
-                jd: currentJD
-            }));
+                jd: currentJD,
+                length: reg_month_lens[month - 1]
+            })
+            lunar_months.push(normal_lunar);
+
             currentJD += reg_month_lens[month - 1];
 
             // Add a leap month to list
             if (leapMonth === month) {
-                lunar_months.push(new LunarDate({
-                    ...date,
-                    leap_month: true,
+                let leap_lunar = new LunarDate({ ...date, leap_month: true })
+                leap_lunar.setExAttribute({
                     leap_year: leapMonth !== 0,
-                    jd: currentJD
-                }));
+                    jd: currentJD,
+                    length: leapMonthLength
+                })
+                lunar_months.push(leap_lunar);
+
                 currentJD += leapMonthLength;
             }
         }
@@ -182,14 +251,19 @@ export default class LunarDate extends Calendar {
 
         let offset = jd - lunar_months[index].jd;
 
-        return new LunarDate({
+        let lunar = new LunarDate({
             day: lunar_months[index].day + offset,
             month: lunar_months[index].month,
             year: lunar_months[index].year,
-            leap_month: lunar_months[index].leap_month,
-            leap_year: lunar_months[index].leap_year,
-            jd: jd
+            leap_month: lunar_months[index].leap_month
         });
+
+        lunar.setExAttribute({
+            jd: jd,
+            leap_year: lunar_months[index].leap_year,
+            length: lunar_months[index].length
+        })
+        return lunar;
     }
 
     /**
@@ -337,9 +411,20 @@ export default class LunarDate extends Calendar {
     }
 
     setDate(date: ILunarDate): void {
-        //TODO: Check if date is valid or not
-        this.set(date);
-        this.init(true);
+        let backupDate: ILunarDate = {
+            day: this.day, month: this.month, year: this.year,
+            leap_month: this.leap_month
+        };
+
+        try {
+            if (!LunarDate.isValidDate(date)) throw new Error("Invalid date");
+            this.set(date);
+            this.leap_month = date.leap_month;
+            this.init(true);
+        } catch (error) {
+            this.setDate(backupDate)
+            throw new Error("Invalid date");
+        }
     }
 
     /**

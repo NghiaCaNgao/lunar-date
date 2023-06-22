@@ -18,15 +18,32 @@ describe("Test cases: `LunarDate`", () => {
         expect(lunar1).toEqual({
             "name": "lunar_calendar",
             "day": 2, "month": 5, "year": 2023, "jd": 2460115,
-            "leap_month": false, "leap_year": true,
+            "leap_month": false, "leap_year": true, "length": 30
         });
 
-        let lunar2 = new LunarDate({ day: 3, month: 5, year: 2023, jd: 2460116, leap_month: false, leap_year: true });
+        let lunar2 = new LunarDate({ day: 3, month: 5, year: 2023, leap_month: false });
         expect(lunar2).toEqual({
             "name": "lunar_calendar",
-            "day": 3, "month": 5, "year": 2023, "jd": 2460116,
-            "leap_month": false, "leap_year": true,
+            "day": 3, "month": 5, "year": 2023, "jd": undefined,
+            "leap_month": false, "leap_year": undefined, "length": undefined
         });
+
+        let lunar3 = new LunarDate({ day: 1, month: 1, year: 1200 });
+        expect(() => lunar3.init()).toThrowError("Invalid date")
+    })
+
+    test("Tests `isValidDate` func", () => {
+        expect(LunarDate["isValidDate"]({ day: 0, month: 5, year: 2023 })).toBe(false);
+        expect(LunarDate["isValidDate"]({ day: 30, month: 5, year: 2023 })).toBe(true);
+        expect(LunarDate["isValidDate"]({ day: 31, month: 5, year: 2023 })).toBe(false);
+        expect(LunarDate["isValidDate"]({ day: 4, month: 0, year: 2023 })).toBe(false);
+        expect(LunarDate["isValidDate"]({ day: 4, month: 13, year: 2023 })).toBe(false);
+        expect(LunarDate["isValidDate"]({ day: 4, month: 4, year: 1200 })).toBe(true);
+        expect(LunarDate["isValidDate"]({ day: 13, month: 1, year: 1200 })).toBe(false);
+        expect(LunarDate["isValidDate"]({ day: 13, month: 1, year: 1199 })).toBe(false);
+        expect(LunarDate["isValidDate"]({ day: 13, month: 1, year: 2200 })).toBe(false);
+        expect(LunarDate["isValidDate"]({ day: 14, month: 11, year: 2199 })).toBe(true);
+        expect(LunarDate["isValidDate"]({ day: 20, month: 11, year: 2199 })).toBe(false);
     })
 
     test("Tests `getYearCode` func", () => {
@@ -43,6 +60,17 @@ describe("Test cases: `LunarDate`", () => {
         expect(LunarDate["getYearCode"](2150)).toBe(3689190)
     })
 
+    test("Tests `getRecommended` func", () => {
+        expect(LunarDate["getRecommended"]({ day: 29, month: 2, year: 2023 })).toEqual(
+            {
+                "day": 29, "month": 2, "year": 2023,
+                "jd": 2460024, "leap_month": false, "leap_year": true, "length": 30,
+            }
+        )
+        expect(() => LunarDate["getRecommended"]({ day: 30, month: 2, year: 2023, leap_month: true }))
+            .toThrowError("Invalid date")
+    })
+
     test("Tests `generateJdOfNewYear` func", () => {
         const year_code_1 = LunarDate["getYearCode"](2023);
         const year_code_2 = LunarDate["getYearCode"](2022);
@@ -54,7 +82,7 @@ describe("Test cases: `LunarDate`", () => {
     test("Tests `decodeLunarYear` func", () => {
         const year_code_1 = LunarDate["getYearCode"](2023);
         const year_code_2 = LunarDate["getYearCode"](2022);
-        // console.log(LunarDate["decodeLunarYear"](2023, year_code_1));
+        // console.log(LunarDate["decodeLunarYear"](2022, year_code_2));
 
         expect(LunarDate["decodeLunarYear"](2023, year_code_1)).toEqual(decode_lunar_new_year_1)
         expect(LunarDate["decodeLunarYear"](2022, year_code_2)).toEqual(decode_lunar_new_year_2)
@@ -71,7 +99,7 @@ describe("Test cases: `LunarDate`", () => {
             {
                 "name": "lunar_calendar",
                 "day": 2, "month": 5, "year": 2023, "jd": 2460115,
-                "leap_month": false, "leap_year": true,
+                "leap_month": false, "leap_year": true, "length": 30
             }
         )
 
@@ -79,7 +107,7 @@ describe("Test cases: `LunarDate`", () => {
             {
                 "name": "lunar_calendar",
                 "day": 16, "month": 2, "year": 2023, "jd": 2460041,
-                "leap_month": true, "leap_year": true,
+                "leap_month": true, "leap_year": true, "length": 29
             }
         )
     })
@@ -89,14 +117,14 @@ describe("Test cases: `LunarDate`", () => {
         expect(LunarDate.fromSolarDate(dl1)).toEqual({
             "name": "lunar_calendar",
             "day": 2, "month": 5, "year": 2023, "jd": 2460115,
-            "leap_month": false, "leap_year": true
+            "leap_month": false, "leap_year": true, "length": 30
         })
 
         const dl2 = new SolarDate(new Date(2023, 0, 1)) // 2023-01-01
         expect(LunarDate.fromSolarDate(dl2)).toEqual({
             "name": "lunar_calendar",
             "day": 10, "month": 12, "year": 2022, "jd": 2459946,
-            "leap_month": false, "leap_year": false
+            "leap_month": false, "leap_year": false, "length": 30
         })
     })
 
@@ -158,21 +186,68 @@ describe("Test cases: `LunarDate`", () => {
     })
 
     test("Tests `toSolarDate` func", () => {
-        let al = new LunarDate({ day: 2, month: 5, year: 2023 });
-        let dl = new SolarDate({ day: 19, month: 6, year: 2023 });
-        al.init();
-        expect(al.toSolarDate()).toEqual(dl);
+        // Test 1:
+        let al1 = new LunarDate({ day: 2, month: 5, year: 2023 });
+        let dl1 = new SolarDate({ day: 19, month: 6, year: 2023 });
+        al1.init();
+        expect(al1.toSolarDate()).toEqual(dl1);
+
+        // Test 2
+        let al2 = new LunarDate({ day: 1, month: 2, year: 2023 });
+        let dl2 = new SolarDate({ day: 20, month: 2, year: 2023 });
+        al2.init();
+
+        expect(al2.toSolarDate()).toEqual(dl2);
+
+        // Test 3
+        let al3 = new LunarDate({ day: 1, month: 2, year: 2023, leap_month: true });
+        let dl3 = new SolarDate({ day: 22, month: 3, year: 2023 });
+        al3.init();
+
+        expect(al3.toSolarDate()).toEqual(dl3);
+
+        // Test 4
+        let al4 = new LunarDate({ day: 1, month: 5, year: 2023, leap_month: true });
+        let dl4 = new SolarDate({ day: 18, month: 6, year: 2023 });
+        al4.init();
+
+        expect(al4.toSolarDate()).toEqual(dl4);
+
+        // Test 5
+        let al5 = new LunarDate({ day: 1, month: 12, year: 2023, leap_month: true });
+        let dl5 = new SolarDate({ day: 11, month: 1, year: 2024 });
+        al5.init();
+
+        expect(al5.toSolarDate()).toEqual(dl5);
     })
 
     test("Test `setDate` func", () => {
-        let al = new LunarDate({ day: 2, month: 5, year: 2023 });
-        al.init();
-        al.setDate({ day: 3, month: 5, year: 2023 })
-        expect(al).toEqual({
+        let al1 = new LunarDate({ day: 2, month: 5, year: 2023 });
+        al1.init();
+        al1.setDate({ day: 3, month: 5, year: 2023 })
+        expect(al1).toEqual({
             "name": "lunar_calendar",
             "day": 3, "month": 5, "year": 2023, "jd": 2460116,
-            "leap_month": false, "leap_year": true
+            "leap_month": false, "leap_year": true, "length": 30
         });
+
+        let al2 = new LunarDate({ day: 2, month: 5, year: 2023 });
+        al2.init();
+        expect(() => al2.setDate({ day: 30, month: 2, year: 2023, leap_month: true }))
+            .toThrowError("Invalid date")
+        expect(al2).toEqual({
+            "day": 2, "month": 5, "name": "lunar_calendar", "year": 2023,
+            "jd": 2460115, "leap_month": false, "leap_year": true, "length": 30,
+        })
+
+        let al3 = new LunarDate({ day: 2, month: 5, year: 2023 });
+        al3.init();
+        expect(() => al3.setDate({ day: 31, month: 2, year: 2023 }))
+            .toThrowError("Invalid date")
+        expect(al3).toEqual({
+            "day": 2, "month": 5, "name": "lunar_calendar", "year": 2023,
+            "jd": 2460115, "leap_month": false, "leap_year": true, "length": 30,
+        })
     })
 
     test("Tests `get` func", () => {

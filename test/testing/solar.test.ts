@@ -117,6 +117,7 @@ describe("Test cases: `SolarDate`", () => {
         expect(SolarDate['jdn']({ day: 1, month: 10, year: 2022 })).toEqual(2459854) // Apply for time: 12:00:00
         expect(SolarDate['jdn'](new Date(2022, 9, 1))).toEqual(2459854)
         expect(SolarDate['jdn']({ day: 1, month: 10, year: 1582 })).toEqual(2299157) // Apply for time: 12:00:00
+        expect(() => SolarDate['jdn']({ day: 32, month: 10, year: 2100 })).toThrowError("Invalid date")
     })
 
     test("Tests `toLunarDate` func", () => {
