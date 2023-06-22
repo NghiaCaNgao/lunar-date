@@ -4,107 +4,119 @@
         "month": 1,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459612,
         "leap_year": false,
-        "jd": 2459612
+        "leap_month": false,
+        "length": 30
     },
     {
         "day": 1,
         "month": 2,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459642,
         "leap_year": false,
-        "jd": 2459642
+        "leap_month": false,
+        "length": 29
     },
     {
         "day": 1,
         "month": 3,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459671,
         "leap_year": false,
-        "jd": 2459671
+        "leap_month": false,
+        "length": 30
     },
     {
         "day": 1,
         "month": 4,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459701,
         "leap_year": false,
-        "jd": 2459701
+        "leap_month": false,
+        "length": 29
     },
     {
         "day": 1,
         "month": 5,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459730,
         "leap_year": false,
-        "jd": 2459730
+        "leap_month": false,
+        "length": 30
     },
     {
         "day": 1,
         "month": 6,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459760,
         "leap_year": false,
-        "jd": 2459760
+        "leap_month": false,
+        "length": 30
     },
     {
         "day": 1,
         "month": 7,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459790,
         "leap_year": false,
-        "jd": 2459790
+        "leap_month": false,
+        "length": 29
     },
     {
         "day": 1,
         "month": 8,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459819,
         "leap_year": false,
-        "jd": 2459819
+        "leap_month": false,
+        "length": 30
     },
     {
         "day": 1,
         "month": 9,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459849,
         "leap_year": false,
-        "jd": 2459849
+        "leap_month": false,
+        "length": 29
     },
     {
         "day": 1,
         "month": 10,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459878,
         "leap_year": false,
-        "jd": 2459878
+        "leap_month": false,
+        "length": 30
     },
     {
         "day": 1,
         "month": 11,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459908,
         "leap_year": false,
-        "jd": 2459908
+        "leap_month": false,
+        "length": 29
     },
     {
         "day": 1,
         "month": 12,
         "year": 2022,
         "name": "lunar_calendar",
-        "leap_month": false,
+        "jd": 2459937,
         "leap_year": false,
-        "jd": 2459937
+        "leap_month": false,
+        "length": 30
     }
 ]

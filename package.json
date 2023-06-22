@@ -1,6 +1,6 @@
 {
   "name": "@nghiavuive/lunar_date_vi",
-  "version": "1.0.11",
+  "version": "2.0.0",
   "author": "nghiacangao",
   "license": "ISC",
   "description": "A tool for converting lunar date and solar date and vice versa",
@@ -19,6 +19,7 @@
   "files": [
     "/dist"
   ],
+  "type": "module",
   "scripts": {
     "rm": "if exist 'dist' rmdir dist /s /q",
     "rm_test": "if exist 'dist' rmdir dist /s /q",
@@ -26,7 +27,6 @@
     "build_test": "npm run rm_test && rollup -c rollup.config.js",
     "test": "jest --coverage"
   },
-  "type": "module",
   "devDependencies": {
     "@jest/globals": "^29.5.0",
     "@rollup/plugin-terser": "^0.4.3",
@@ -46,6 +46,6 @@
     "test": "test"
   },
   "keywords": [
-    "lunar"
+    "calendar, lunar, solar, lunar_date, solar_date, month, lunar_month, SolarDate, LunarDate"
   ]
 }
