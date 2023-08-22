@@ -1,20 +1,20 @@
 name: Publish LunarDate
 run-name: ${{ github.actor }} publishes LunarDate
 on:
-  pull_request:
+  pull_request: # when accepting a pull request
     types:
       - closed
     branches: #target branch
       - main
-  workflow_dispatch:
+  workflow_dispatch: # or intentionally executing
     inputs:
       publish_confirm:
         type: boolean
         description: Confirm publishing
         default: false
 jobs:
-  release-modules:
-    if: github.event.inputs.publish_confirm || (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'release'))
+  release-modules: # when accepted publish or pull request marked as `release` (see in Pull Request > labels)
+    if: github.event.inputs.publish_confirm || (github.event.pull_request.merged && contains(github.event.pull_request.labels.*.name, 'release')) 
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "16.x"
-          registry-url: "https://registry.npmjs.org"
+          registry-url: "https://registry.npmjs.org" # registry to set up for auth
       - name: git config
         run: |
           git config user.name "${GITHUB_ACTOR}"
