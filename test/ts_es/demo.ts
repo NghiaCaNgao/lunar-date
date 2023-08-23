@@ -1,4 +1,4 @@
-import { SolarDate, LunarDate } from "../../bin/dist/index.mjs";
+import { SolarDate, LunarDate } from "../../bin/dist/index.js";
 
 const solar_date = new SolarDate(new Date());
 console.log(solar_date);

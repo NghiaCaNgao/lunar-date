@@ -1,8 +1,8 @@
 name: Test LunarDate
 run-name: ${{ github.actor }} tests LunarDate
-on: [pull_request]
+on: [pull_request] # Run on every pull request
 jobs:
-  test-modules:
+  test-modules: # Test modules
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
