@@ -15,18 +15,18 @@
         "removeComments": true,
         "sourceMap": true,
         "preserveConstEnums": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
     },
     "ts-node": {
         "esm": true,
         "compilerOptions": {
-            "module": "ES6",
+            "module": "CommonJS",
             "esModuleInterop": true
         }
     },
     "include": [
         "./src/*.ts",
         "./src/modules/*.ts",
-        "test/tests/*.ts"
+        "./test/testing/*.ts"
     ]
 }

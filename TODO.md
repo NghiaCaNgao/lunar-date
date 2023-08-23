@@ -1,1 +1,2 @@
-- Thêm nhiều thông tin hơn https://lichngaytot.com/xem-ngay-tot-xau.html
+"type": "module", add in package.json
+"type": "module", remove to run npx ts-node

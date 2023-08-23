@@ -4,41 +4,43 @@ import typescript from '@rollup/plugin-typescript'
 import terser from '@rollup/plugin-terser'; // For minify
 
 const production = true
-const out_dir = production ? "dist" : "dev/dist"
+// const mode = "development"
+
+const root_dir = production ? "dist" : "bin/dist"
 
 export default [
     {
         input: `src/index.ts`,
-        plugins: [typescript({ include: ["src/**/*.ts"] }), esbuild()],
+        plugins: [typescript(), esbuild()],
         output: [
             {
-                file: `${out_dir}/index.umd.js`,
+                file: `${root_dir}/index.umd.js`,
                 format: 'umd', // umd - for Browser + Node.js
                 sourcemap: !production,
                 name: "_calendar"
             },
             {
-                file: `${out_dir}/index.mjs`,
-                format: 'es', // ESM - using import 
+                file: `${root_dir}/index.mjs`,
+                format: 'es', // ESM
                 sourcemap: !production
             },
         ]
     },
     {
         input: `src/index.ts`,
-        plugins: [typescript({ include: ["src/**/*.ts"] })],
+        plugins: [typescript()],
         output: {
-            file: `${out_dir}/index.cjs`,
+            file: `${root_dir}/index.cjs`,
             format: 'cjs', // cjs - for Node.js
             sourcemap: !production
         },
     },
     {
         input: `src/index.ts`,
-        plugins: [typescript({ include: ["src/**/*.ts"] }), esbuild(), terser()],
+        plugins: [typescript(), esbuild(), terser()],
         output: [
             {
-                file: `${out_dir}/index.umd.min.js`,
+                file: `${root_dir}/index.umd.min.js`,
                 format: 'umd', // umd - for Browser + Node.js
                 sourcemap: !production,
                 name: "_calendar"
@@ -49,7 +51,7 @@ export default [
         input: `src/index.ts`,
         plugins: [dts()],
         output: {
-            file: `${out_dir}/index.d.ts`,
+            file: `${root_dir}/index.d.ts`,
             format: 'es'
         },
     }

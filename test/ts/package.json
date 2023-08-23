@@ -1,9 +1,10 @@
 {
   "name": "ts",
   "version": "1.0.0",
-  "main": "demo.ts",
+  "description": "",
+  "main": "index.ts",
   "scripts": {
-    "start": "npx ts-node demo.ts"
+    "start": "npx ts-node --esm demo.ts"
   },
   "type": "module",
   "keywords": [],
@@ -11,7 +12,5 @@
   "license": "ISC",
   "dependencies": {
     "typescript": "^5.1.3"
-  },
-  "devDependencies": {},
-  "description": ""
+  }
 }
