@@ -102,7 +102,7 @@ Sử dụng qua jsDelivr
 
 ## Examples
 
-Sử dụng `ES Module` với Typescript. JavaScript tương tự.
+Ví dụ sau sử dụng `ES Module` với Typescript. JavaScript tương tự.
 
 > **Note** Nếu sử dụng `ts-node` thì cần chạy `npx ts-node --esm <filename>`. Hiện tại chưa tương thích với Node 20.x
 
