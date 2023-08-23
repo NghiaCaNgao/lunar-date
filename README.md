@@ -13,7 +13,7 @@ Remake từ <b><a href="https://www.informatik.uni-leipzig.de/~duc/amlich/calrul
 
 ## Table of Contents
 
-- [Feature](#features)
+- [Features](#features)
 - [Installation](#installation)
   - [Package manager](#package-manager)
   - [CDN](#cdn)
@@ -66,7 +66,7 @@ Cài đặt qua NPM
 npm install @nghiavuive/lunar_date_vi
 ```
 
-Khi cài đặt xong, ta có thể import bằng `import` hoặc `require`. Trước khi bắt đầu, đảm bảo rằng `package.json` có `"type": "module"`.
+Xem demo cài đặt với các module types: **[LunarDate_Import](https://github.com/NghiaCaNgao/LunarDate_Import)**
 
 ```typescript
 import { LunarDate, SolarDate } from "@nghiavuive/lunar_date_vi";
@@ -79,7 +79,7 @@ Nếu sử dụng Typescript, lưu ý cấu hình `tsconfig.json` như sau:
   "compilerOptions": {
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "module": "ESNext"
+    "module": "ESNext" // Hoặc "CommonJS" nếu dùng CJS
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules"]
@@ -89,7 +89,7 @@ Nếu sử dụng Typescript, lưu ý cấu hình `tsconfig.json` như sau:
 Nếu sử dụng `require`
 
 ```javascript
-const calendar = require("@nghiavuive/lunar_date_vi/dist/index.cjs");
+const calendar = require("@nghiavuive/lunar_date_vi");
 ```
 
 ### CDN
@@ -104,7 +104,7 @@ Sử dụng qua jsDelivr
 
 Sử dụng `ES Module` với Typescript. JavaScript tương tự.
 
-> **Note** Nếu sử dụng `ts-node` thì cần chạy `npx ts-node --esm <filename>`
+> **Note** Nếu sử dụng `ts-node` thì cần chạy `npx ts-node --esm <filename>`. Hiện tại chưa tương thích với Node 20.x
 
 Đoạn lệnh sau chuyển từ lịch dương sang lịch âm (trên) và âm sang dương (dưới).
 

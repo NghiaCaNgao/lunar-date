@@ -1,30 +1,34 @@
 {
   "name": "@nghiavuive/lunar_date_vi",
-  "version": "2.0.0",
-  "author": "nghiacangao",
+  "version": "2.0.1-beta.4",
+  "author": {
+    "name": "NghiaCaNgao",
+    "email": "fakenoname02@gmail.com",
+    "url": "https://nghiacangao.io.vn"
+  },
   "license": "ISC",
   "description": "A tool for converting lunar date and solar date and vice versa",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NghiaCaNgao/lunarDate.git"
+    "url": "git+https://github.com/NghiaCaNgao/LunarDate.git"
   },
   "bugs": {
-    "url": "https://github.com/NghiaCaNgao/lunarDate/issues"
+    "url": "https://github.com/NghiaCaNgao/LunarDate/issues"
   },
-  "homepage": "https://github.com/NghiaCaNgao/lunarDate",
-  "main": "dist/index.mjs",
-  "module": "dist/index.mjs",
+  "homepage": "https://github.com/NghiaCaNgao/LunarDate",
+  "keywords": [
+    "calendar, lunar, solar, lunar_date, solar_date, month, lunar_month, SolarDate, LunarDate"
+  ],
+  "main": "dist/index.umd.js",
+  "module": "dist/index.umd.js",
+  "browser": "dist/index.umd.js",
   "types": "dist/index.d.ts",
   "typings": "dist/index.d.ts",
   "files": [
     "/dist"
   ],
-  "type": "module",
   "scripts": {
-    "rm": "if exist 'dist' rmdir dist /s /q",
-    "rm_test": "if exist 'dist' rmdir dist /s /q",
-    "build": "npm run rm && rollup -c rollup.config.js",
-    "build_test": "npm run rm_test && rollup -c rollup.config.js",
+    "build": "rimraf dist dev/dist && rollup -c rollup.config.mjs",
     "test": "jest --coverage"
   },
   "devDependencies": {
@@ -41,11 +45,5 @@
     "ts-node": "^10.9.1",
     "tslib": "^2.5.3",
     "typescript": "^5.1.3"
-  },
-  "directories": {
-    "test": "test"
-  },
-  "keywords": [
-    "calendar, lunar, solar, lunar_date, solar_date, month, lunar_month, SolarDate, LunarDate"
-  ]
+  }
 }

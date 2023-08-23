@@ -1,3 +1,6 @@
 node_modules
 coverage
 test/ts/node_modules
+*.tgz
+bin
+dist

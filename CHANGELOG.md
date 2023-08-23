@@ -1,5 +1,7 @@
 # Changelog
-
+## [2.0.1] - 2023-08-23
+### Fixed
+- Sửa lỗi import để tương thích với commonjs typescript
 ## [2.0.0] - 2023-06-22
 ### Added
 - Thêm interfaces: list **`ILunarDateEx`**, **`ILunarDateLeap`**
